@@ -32,18 +32,18 @@
     };
 
     # mac mini m4
-      homeConfigurations.macMiniM4 = home-manager.lib.homeManagerConfiguration {
+    homeConfigurations.macm4 = home-manager.lib.homeManagerConfiguration {
       pkgs = nixpkgs.legacyPackages."aarch64-darwin";
         
-        # Specify your home configuration modules here, for example,
-        # the path to your home.nix.
-        modules = [
-          mac-app-util.homeManagerModules.default
-          ({ ... }: {
-            nixpkgs.overlays = [ brew-nix.overlays.default ];
-          })
-          ./hosts/mac-mini-m4/home.nix 
-        ];
+      # Specify your home configuration modules here, for example,
+      # the path to your home.nix.
+      modules = [
+        mac-app-util.homeManagerModules.default
+        ({ ... }: {
+          nixpkgs.overlays = [ brew-nix.overlays.default ];
+        })
+        ./hosts/mac-m4/home.nix 
+      ];
     };
   };
 }

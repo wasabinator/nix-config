@@ -19,12 +19,6 @@
     config.allowUnfree = true;
   };
 
-  # Configure this via secrets later
-  #home.file = {
-  #  ".ssh/id_ed25519".source = ../../../secrets/mac-mini-m4/id_ed25519;
-  #  ".ssh/id_ed25519.pub".source = ./../../secrets/mac-mini-m4/id_ed25519.pub;
-  #};
-
   # The home.packages option allows you to install Nix packages into your environment.
   home.packages = with pkgs; [
     brewCasks.android-studio
@@ -75,17 +69,6 @@
         ".DS_Store"
         ".direnv"
       ];
-    };
-
-    ssh = {
-      enable = true;
-      extraConfig = ''
-        IdentityFile = ~/.ssh/id_ed25519
-      '';
-      matchBlocks.gh = {
-        user = "git";
-        hostname = "github.com";
-      };
     };
 
     zsh = {
