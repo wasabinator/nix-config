@@ -19,10 +19,11 @@
     config.allowUnfree = true;
   };
 
-  home.file = {
-    ".ssh/id_ed25519".source = ./secrets/id_ed25519;
-    ".ssh/id_ed25519.pub".source = ./secrets/id_ed25519.pub;
-  };
+  # Configure this via secrets later
+  #home.file = {
+  #  ".ssh/id_ed25519".source = ../../../secrets/mac-mini-m4/id_ed25519;
+  #  ".ssh/id_ed25519.pub".source = ./../../secrets/mac-mini-m4/id_ed25519.pub;
+  #};
 
   # The home.packages option allows you to install Nix packages into your environment.
   home.packages = with pkgs; [
