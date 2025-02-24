@@ -1,31 +1,18 @@
 { config, pkgs, ... }:
 
 {
-#  nixpkgs = {
-#    config.allowUnfree = true;
-#    overlays = [
-#      # Workaround for Fedora
-#      (final: prev: { openssh = prev.openssh_gssapi; } )
-#    ];
-#  };
-
-  home.stateVersion = "24.11";
+  home.username = "amiceli";
 
   home.packages = with pkgs; [
     #cryptomator
-    fastfetch
     gnomeExtensions.appindicator
     gnomeExtensions.battery-usage-wattmeter
     gnomeExtensions.dash-to-dock
     gnomeExtensions.tiling-shell
     gnome-tweaks
-    rustup
-    rust-script
-    signal-desktop
     sqlitebrowser    
     synology-drive-client
     steam-run
-    telegram-desktop
     vlc
   ];
 
@@ -55,12 +42,6 @@
     direnv = {
       enable = true;
       nix-direnv.enable = true;
-    };
-
-    git = {
-      enable = true;
-      userName = "Tony Miceli";
-      userEmail = "6946957+wasabinator@users.noreply.github.com";
     };
   };
 

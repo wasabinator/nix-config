@@ -42,6 +42,7 @@
         ({ ... }: {
           nixpkgs.overlays = [ brew-nix.overlays.default ];
         })
+        ./common/home.nix
         ./hosts/mac-m4/home.nix 
       ];
     };
