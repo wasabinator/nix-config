@@ -23,9 +23,12 @@
         ./hosts/fw13/configuration.nix
         home-manager.nixosModules.home-manager
         {
-          home-manager.useGlobalPkgs = true; # makes hm use nixos's pkgs value
-          home-manager.extraSpecialArgs = { inherit inputs; }; # allows access to flake inputs in hm modules
-          home-manager.users.amiceli.imports = [ ./hosts/fw13/home.nix ];
+          home-manager.useGlobalPkgs = true;
+          home-manager.extraSpecialArgs = { inherit inputs; };
+          home-manager.users.amiceli.imports = [
+            ./common/home.nix 
+            ./hosts/fw13/home.nix
+          ];
           home-manager.backupFileExtension = ".bak";
         }
       ];
@@ -34,9 +37,6 @@
     # mac mini m4
     homeConfigurations.macm4 = home-manager.lib.homeManagerConfiguration {
       pkgs = nixpkgs.legacyPackages."aarch64-darwin";
-        
-      # Specify your home configuration modules here, for example,
-      # the path to your home.nix.
       modules = [
         mac-app-util.homeManagerModules.default
         ({ ... }: {
