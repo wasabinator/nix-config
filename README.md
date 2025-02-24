@@ -2,7 +2,7 @@
 
 My Nix config for various systems
 
-## Linux hosts
+## NixOS hosts
 
 Build with `sudo nixos-rebuild switch --flake .#hostname`
 
