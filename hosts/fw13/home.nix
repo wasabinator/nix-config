@@ -10,16 +10,24 @@
     gnomeExtensions.dash-to-dock
     gnomeExtensions.tiling-shell
     gnome-tweaks
+    plex
+    plexamp
     sqlitebrowser    
     synology-drive-client
     steam-run
     vlc
   ];
 
-  home.file = {
-    ".config/autostart/org.cryptomator.Cryptomator.desktop".source = ./autostart/org.cryptomator.Cryptomator.desktop;
-    ".config/autostart/signal-desktop.desktop".source = ./autostart/signal-desktop.desktop;
-    ".config/autostart/synology-drive.desktop".source = ./autostart/synology-drive.desktop;
+  xdg = {
+    enable = true;
+
+    # App specific settings 
+    configFile."Signal/ephemeral.json".source = ./settings/signal-desktop/ephemeral.json;
+
+    # Autostart apps
+    configFile."autostart/org.cryptomator.Cryptomator.desktop".source = ./settings/cryptomator/org.cryptomator.Cryptomator.desktop;
+    configFile."autostart/signal-desktop.desktop".source = ./settings/signal-desktop/signal-desktop.desktop;
+    configFile."autostart/synology-drive.desktop".source = ./settings/synology-drive/synology-drive.desktop;
   };
 
   programs = with pkgs; {
@@ -73,8 +81,8 @@
     "org/gnome/shell".favorite-apps = [
       "firefox.desktop"
       "org.gnome.Nautilus.desktop"
+      "org.gnome.Console.desktop"
       "org.gnome.Terminal.desktop"
-      "code.desktop"
       "tv.plex.PlexDesktop.desktop"
       "com.plexamp.Plexamp.desktop"
       "org.gnome.Settings.desktop"
