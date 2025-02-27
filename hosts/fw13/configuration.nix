@@ -7,7 +7,6 @@
 {
   imports =
     [ 
-      #"${builtins.fetchGit { url = "https://github.com/NixOS/nixos-hardware.git"; }}/framework/13-inch/7040-amd"
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
@@ -20,7 +19,13 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelParams = [ "mem_sleep_default=deep" ];
   boot.initrd.luks.devices."luks-4386fb32-c937-4460-8f81-8d0477ac5364".device = "/dev/disk/by-uuid/4386fb32-c937-4460-8f81-8d0477ac5364";
-  
+ 
+  # suspend then hibernate
+  systemd.sleep.extraConfig = ''
+    HibernateDelaySec=10min
+  '';
+  services.logind.lidSwitch = "suspend-then-hibernate";
+
   networking.hostName = "fw13"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -34,6 +39,20 @@
   # Resolve samba server names
   services.samba.winbindd.enable = true;
   services.samba.nmbd.enable = true;
+  
+  # .local name resolution
+  services.avahi = {
+    enable = true;
+    nssmdns = true;
+    publish = {
+      enable = true;
+      addresses = true;
+      domain = true;
+      hinfo = true;
+      userServices = true;
+      workstation = true;
+    };
+  };
 
   # Set your time zone.
   time.timeZone = "Australia/Melbourne";
