@@ -9,7 +9,6 @@
   };
 
   home.packages = with pkgs; [
-    brewCasks.android-studio
     brewCasks.plex
     brewCasks.plexamp
     dockutil
@@ -85,8 +84,6 @@
       --add "${pkgs.telegram-desktop}/Applications/Telegram.app" \
       --add /System/Applications/Calendar.app \
       --add /System/Applications/Notes.app \
-      --add "${pkgs.brewCasks.plex}/Applications/Plex.app" \
-      --add "${pkgs.brewCasks.plexamp}/Applications/Plexamp.app" \
       --add "/System/Applications/System Settings.app"
   '';
 }
