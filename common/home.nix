@@ -10,6 +10,8 @@
 
   home.packages = with pkgs; [
     fastfetch
+    rustup
+    rust-script
     signal-desktop
     telegram-desktop
   ];

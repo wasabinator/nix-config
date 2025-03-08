@@ -32,13 +32,13 @@
         nixos-hardware.nixosModules.framework-13-7040-amd
         ./hosts/fw13/configuration.nix
         home-manager.nixosModules.home-manager {
-          home-manager.useGlobalPkgs = true;
+          home-manager.useGlobalPkgs = false;
           home-manager.extraSpecialArgs = { inherit inputs; };
           home-manager.users.amiceli.imports = [
             ./common/home.nix 
             ./hosts/fw13/home.nix
           ];
-          home-manager.backupFileExtension = "backup";
+          home-manager.backupFileExtension = "home-manager-backup";
         }
       ];
     };
@@ -54,14 +54,14 @@
         (import ./hosts/mac-m4/configuration.nix { inherit nixpkgs nix-darwin; })
         home-manager.darwinModules.home-manager {
           #nixpkgs.overlays = [ brew-nix.overlays.default ];
-          home-manager.useGlobalPkgs = true;
+          home-manager.useGlobalPkgs = false;
           home-manager.extraSpecialArgs = { inherit inputs; };
           home-manager.users.amiceli.imports = [
             mac-app-util.homeManagerModules.default
             ./common/home.nix
             ./hosts/mac-m4/home.nix
           ];
-          home-manager.backupFileExtension = "backup";
+          home-manager.backupFileExtension = "home-manager-backup";
         }
       ];
     };

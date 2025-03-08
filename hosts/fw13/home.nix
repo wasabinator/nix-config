@@ -4,7 +4,6 @@
   home.username = "amiceli";
 
   home.packages = with pkgs; [
-    #cryptomator
     gnomeExtensions.appindicator
     gnomeExtensions.battery-usage-wattmeter
     gnomeExtensions.dash-to-dock
@@ -12,11 +11,19 @@
     gnome-tweaks
     plex
     plexamp
+    protonvpn-gui
     sqlitebrowser    
     synology-drive-client
     steam-run
     vlc
   ];
+
+  i18n.inputMethod = {
+    enabled = "fcitx5";
+    fcitx5.addons = [
+      pkgs.fcitx5-mozc
+    ];
+  };
 
   xdg = {
     enable = true;
@@ -25,7 +32,6 @@
     configFile."Signal/ephemeral.json".source = ./settings/signal-desktop/ephemeral.json;
 
     # Autostart apps
-    configFile."autostart/org.cryptomator.Cryptomator.desktop".source = ./settings/cryptomator/org.cryptomator.Cryptomator.desktop;
     configFile."autostart/signal-desktop.desktop".source = ./settings/signal-desktop/signal-desktop.desktop;
     configFile."autostart/synology-drive.desktop".source = ./settings/synology-drive/synology-drive.desktop;
   };
@@ -51,8 +57,45 @@
       enable = true;
       nix-direnv.enable = true;
     };
-  };
 
+    librewolf = {
+      enable = true;
+      policies = {
+        DisableTelemetry = true;
+        Preferences = {
+          "privacy.donottrackheader.enabled" = true;
+          "privacy.fingerprintingProtection" = true;
+          "privacy.resistFingerprinting" = true;
+          "privacy.trackingprotection.emailtracking.enabled" = true;
+          "privacy.trackingprotection.enabled" = true;
+          "privacy.trackingprotection.fingerprinting.enabled" = true;
+          "privacy.trackingprotection.socialtracking.enabled" = true;
+        };
+        ExtensionSettings = {
+          "jid1-MnnxcxisBPnSXQ@jetpack" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/file/4321653/privacy_badger17-latest.xpi";
+            installation_mode = "force_installed";
+            default_area = "navbar";
+          };
+          "uBlock0@raymondhill.net" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
+            installation_mode = "force_installed";
+            default_area = "navbar";
+          };
+          "78272b6fa58f4a1abaac99321d503a20@proton.me" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/proton-pass/latest.xpi";
+            installation_mode = "force_installed";
+            default_area = "navbar";
+          };
+          "vpn@proton.ch" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/proton-vpn-firefox-extension/latest.xpi";
+            installation_mode = "force_installed";
+            default_area = "navbar";
+          };
+        };
+      };
+    };
+  };
   dconf.settings = {
     "org/gnome/desktop/interface" = {
       clock-format = "12h";
@@ -79,7 +122,7 @@
       tiling-shell.extensionUuid
     ];
     "org/gnome/shell".favorite-apps = [
-      "firefox.desktop"
+      "librewolf.desktop"
       "org.gnome.Nautilus.desktop"
       "org.gnome.Console.desktop"
       "org.gnome.Terminal.desktop"
