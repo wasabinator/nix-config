@@ -116,21 +116,9 @@
     description = "Tony Miceli";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-    #  thunderbird
     ];
   };
 
-  # Install librewolf.
-#  programs.librewolf = {
-#    enable = true;
-#    policies = {
-#      DisableTelemetry = true;
-#    };
-#  };
-
-  # Allow unfree packages
-  #nixpkgs.config.allowUnfree = true;
-  
   # Enable Flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 

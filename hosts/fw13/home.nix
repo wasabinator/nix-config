@@ -58,12 +58,11 @@
       nix-direnv.enable = true;
     };
 
-    librewolf = {
+    firefox = {
       enable = true;
       policies = {
         DisableTelemetry = true;
         Preferences = {
-          "privacy.donottrackheader.enabled" = true;
           "privacy.fingerprintingProtection" = true;
           "privacy.resistFingerprinting" = true;
           "privacy.trackingprotection.emailtracking.enabled" = true;
@@ -71,31 +70,10 @@
           "privacy.trackingprotection.fingerprinting.enabled" = true;
           "privacy.trackingprotection.socialtracking.enabled" = true;
         };
-        ExtensionSettings = {
-          "jid1-MnnxcxisBPnSXQ@jetpack" = {
-            install_url = "https://addons.mozilla.org/firefox/downloads/file/4321653/privacy_badger17-latest.xpi";
-            installation_mode = "force_installed";
-            default_area = "navbar";
-          };
-          "uBlock0@raymondhill.net" = {
-            install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
-            installation_mode = "force_installed";
-            default_area = "navbar";
-          };
-          "78272b6fa58f4a1abaac99321d503a20@proton.me" = {
-            install_url = "https://addons.mozilla.org/firefox/downloads/latest/proton-pass/latest.xpi";
-            installation_mode = "force_installed";
-            default_area = "navbar";
-          };
-          "vpn@proton.ch" = {
-            install_url = "https://addons.mozilla.org/firefox/downloads/latest/proton-vpn-firefox-extension/latest.xpi";
-            installation_mode = "force_installed";
-            default_area = "navbar";
-          };
-        };
       };
     };
   };
+
   dconf.settings = {
     "org/gnome/desktop/interface" = {
       clock-format = "12h";

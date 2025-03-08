@@ -4,11 +4,8 @@
   home.username = "amiceli";
   home.homeDirectory = "/Users/amiceli";
 
-  nixpkgs = {
-    config.allowUnfree = true;
-  };
-
   home.packages = with pkgs; [
+    brewCasks.firefox
     brewCasks.plex
     brewCasks.plexamp
     dockutil
@@ -79,7 +76,7 @@
       --remove all \
       --add /Applications/Launchpad.app \
       --add /Applications/Utilities/Terminal.app \
-      --add /Applications/Firefox.app \
+      --add "${pkgs.brewCasks.firefox}/Applications/Firefox.app" \
       --add "${pkgs.signal-desktop}/Applications/Signal.app" \
       --add "${pkgs.telegram-desktop}/Applications/Telegram.app" \
       --add /System/Applications/Calendar.app \

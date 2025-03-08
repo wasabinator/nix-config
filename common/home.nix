@@ -3,8 +3,6 @@
 {
   home.stateVersion = "24.11";
 
-  nixpkgs.config.allowUnfree = true;
-
   # Force config files to go in ~/.config
   xdg.enable = true;
 

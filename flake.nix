@@ -23,7 +23,6 @@
   outputs = { self, nixpkgs, nixos-hardware, nix-darwin, home-manager, brew-nix, mac-app-util, ... }@inputs: {
     # frame.work 13
     nixosConfigurations.fw13 = nixpkgs.lib.nixosSystem {
-      #system = "x86_64-linux";
       pkgs = import nixpkgs { 
         system = "x86_64-linux"; 
         config.allowUnfree = true;
@@ -32,7 +31,7 @@
         nixos-hardware.nixosModules.framework-13-7040-amd
         ./hosts/fw13/configuration.nix
         home-manager.nixosModules.home-manager {
-          home-manager.useGlobalPkgs = false;
+          home-manager.useGlobalPkgs = true;
           home-manager.extraSpecialArgs = { inherit inputs; };
           home-manager.users.amiceli.imports = [
             ./common/home.nix 
@@ -53,8 +52,8 @@
       modules = [
         (import ./hosts/mac-m4/configuration.nix { inherit nixpkgs nix-darwin; })
         home-manager.darwinModules.home-manager {
-          #nixpkgs.overlays = [ brew-nix.overlays.default ];
-          home-manager.useGlobalPkgs = false;
+          nixpkgs.overlays = [ brew-nix.overlays.default ];
+          home-manager.useGlobalPkgs = true;
           home-manager.extraSpecialArgs = { inherit inputs; };
           home-manager.users.amiceli.imports = [
             mac-app-util.homeManagerModules.default
