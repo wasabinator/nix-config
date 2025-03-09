@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   home.username = "amiceli";
@@ -68,6 +68,10 @@
   };
 
   dconf.settings = {
+    "org/gnome/desktop/input-sources" = {
+      sources = with lib.hm.gvariant; [ (mkTuple [ "xkb" "au" ]) (mkTuple [ "ibus" "mozc-on" ]) ];
+      xkb-options = "['terminate:ctrl_alt_bksp']";
+    };
     "org/gnome/desktop/interface" = {
       clock-format = "12h";
       clock-show-weekday = true;

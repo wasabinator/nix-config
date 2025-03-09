@@ -139,9 +139,9 @@
   #  wget
   ];
 
-  environment.sessionVariables = {
-    IBUS_ENABLE_SYNC_MODE = "1";
-  };
+  #environment.sessionVariables = {
+  #  IBUS_ENABLE_SYNC_MODE = "1";
+  #};
 
   # Enable AppImage support
   programs.appimage = {
