@@ -22,7 +22,7 @@
  
   # suspend then hibernate
   systemd.sleep.extraConfig = ''
-    HibernateDelaySec=10min
+    HibernateDelaySec=15min
   '';
   services.logind.lidSwitch = "suspend-then-hibernate";
 
@@ -71,6 +71,15 @@
     LC_TELEPHONE = "en_AU.UTF-8";
     LC_TIME = "en_AU.UTF-8";
   };
+
+  # Enable Japanese IME
+  i18n.inputMethod = {
+    enable = true;
+    type = "ibus";
+    ibus.engines = with pkgs.ibus-engines; [ mozc ];
+  };
+
+  i18n.supportedLocales = [ "en_AU.UTF-8/UTF-8" "ja_JP.UTF-8/UTF-8" ];
 
   services.fwupd.enable = true;
   hardware.framework.amd-7040.preventWakeOnAC = true;
@@ -129,6 +138,16 @@
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #  wget
   ];
+
+  environment.sessionVariables = {
+    IBUS_ENABLE_SYNC_MODE = "1";
+  };
+
+  # Enable AppImage support
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

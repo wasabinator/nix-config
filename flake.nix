@@ -43,14 +43,14 @@
     };
 
     # mac mini m4
-    darwinConfigurations.macm4 = nix-darwin.lib.darwinSystem {
+    darwinConfigurations.mini = nix-darwin.lib.darwinSystem {
       pkgs = import nixpkgs { 
         system = "aarch64-darwin"; 
         config.allowUnfree = true;
         overlays = [ brew-nix.overlays.default ];
       };
       modules = [
-        (import ./hosts/mac-m4/configuration.nix { inherit nixpkgs nix-darwin; })
+        (import ./hosts/mini/configuration.nix { inherit nixpkgs nix-darwin; })
         home-manager.darwinModules.home-manager {
           nixpkgs.overlays = [ brew-nix.overlays.default ];
           home-manager.useGlobalPkgs = true;
