@@ -18,7 +18,8 @@
     home-manager.enable = true;
 
     ghostty = {
-      enable = true;
+      #nix-darwin target is currently broken, so needs to be enabled for linux only, and we just use this to specify the config but install via brew-nix on darwin
+      #enable = true;
       settings = {
         theme = "LiquidCarbonTransparent";
         font-family = "Jetbrains Mono";

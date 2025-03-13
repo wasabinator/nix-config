@@ -50,7 +50,7 @@
         overlays = [ brew-nix.overlays.default ];
       };
       modules = [
-        (import ./hosts/mini/configuration.nix { inherit nixpkgs nix-darwin; })
+        ./hosts/mini/configuration.nix
         home-manager.darwinModules.home-manager {
           nixpkgs.overlays = [ brew-nix.overlays.default ];
           home-manager.useGlobalPkgs = true;
@@ -58,11 +58,14 @@
           home-manager.users.amiceli.imports = [
             mac-app-util.homeManagerModules.default
             ./common/home.nix
-            ./hosts/mac-m4/home.nix
+            ./hosts/mini/home.nix
           ];
           home-manager.backupFileExtension = "home-manager-backup";
         }
       ];
+      specialArgs = {
+        inherit self inputs nix-darwin;
+      };
     };
   };
 }

@@ -50,7 +50,6 @@
     };
   };
 
-
   programs = with pkgs; {
     bash = {
       enable = true;
@@ -88,6 +87,8 @@
         };
       };
     };
+
+    ghostty.enable = true;
   };
 
   dconf.settings = {

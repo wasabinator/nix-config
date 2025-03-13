@@ -6,6 +6,7 @@
 
   home.packages = with pkgs; [
     brewCasks.firefox
+    brewCasks.ghostty
     brewCasks.plex
     brewCasks.plexamp
     dockutil
@@ -75,7 +76,7 @@
     ${pkgs.dockutil}/bin/dockutil \
       --remove all \
       --add /Applications/Launchpad.app \
-      --add /Applications/Utilities/Terminal.app \
+      --add "${pkgs.brewCasks.ghostty}/Applications/Ghostty.app" \
       --add "${pkgs.brewCasks.firefox}/Applications/Firefox.app" \
       --add "${pkgs.signal-desktop}/Applications/Signal.app" \
       --add "${pkgs.telegram-desktop}/Applications/Telegram.app" \
