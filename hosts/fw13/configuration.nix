@@ -33,6 +33,13 @@
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
+  # Nerdfonts
+  fonts.fontDir.enable = true;
+  fonts.fontconfig.enable = true;
+  fonts.packages = with pkgs; [
+    jetbrains-mono
+  ];
+
   # Enable networking
   networking.networkmanager.enable = true;
 

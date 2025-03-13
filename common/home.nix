@@ -17,6 +17,21 @@
   programs = with pkgs; {
     home-manager.enable = true;
 
+    ghostty = {
+      enable = true;
+      settings = {
+        theme = "LiquidCarbonTransparent";
+        font-family = "Jetbrains Mono";
+        font-size = 12;
+        keybind = [
+          "ctrl+h=goto_split:left"
+          "ctrl+l=goto_split:right"
+        ];
+        window-height = 45;
+        window-width = 140;
+      };
+    };
+
     git = {
       enable = true;
       userEmail = "6946957+wasabinator@users.noreply.github.com";
@@ -25,6 +40,22 @@
         ".DS_Store"
         ".direnv"
       ];
+    };
+
+    starship = {
+      enable = true;
+      settings = {
+        battery = {
+          format = "[$symbol$percentage]($style) ";
+          disabled = false;
+          display = [
+            {
+              style = "red bold";
+              threshold = 30;
+            }
+          ];
+        };
+      };
     };
   };
 

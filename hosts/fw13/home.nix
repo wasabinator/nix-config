@@ -12,7 +12,8 @@
     plex
     plexamp
     protonvpn-gui
-    sqlitebrowser    
+    sqlitebrowser
+    starship
     synology-drive-client
     steam-run
     vlc
@@ -22,12 +23,33 @@
     enable = true;
 
     # App specific settings 
-    configFile."Signal/ephemeral.json".source = ./settings/signal-desktop/ephemeral.json;
+    configFile."Signal/ephemeral.json" = {
+      force = true;
+      source = ./settings/signal-desktop/ephemeral.json;
+    };
 
     # Autostart apps
-    configFile."autostart/signal-desktop.desktop".source = ./settings/signal-desktop/signal-desktop.desktop;
-    configFile."autostart/synology-drive.desktop".source = ./settings/synology-drive/synology-drive.desktop;
+    configFile."autostart/signal-desktop.desktop" = {
+      force = true;
+      source = ./settings/signal-desktop/signal-desktop.desktop;
+    };
+    configFile."autostart/synology-drive.desktop" = {
+      force = true;
+      source = ./settings/synology-drive/synology-drive.desktop;
+    };
+
+    # Bookmarks
+    configFile."gtk-3.0/bookmarks" = {
+      force = true;
+      text = ''
+        file:///home/amiceli/repo
+        file:///home/amiceli/Documents
+        file:///home/amiceli/Downloads
+        smb://mitsukoshi.local
+      '';
+    };
   };
+
 
   programs = with pkgs; {
     bash = {
@@ -41,6 +63,7 @@
         fi
 
         export EDITOR="nano"
+        eval "$(starship init bash)"
         
         fastfetch
       '';
@@ -99,22 +122,12 @@
     "org/gnome/shell".favorite-apps = [
       "firefox.desktop"
       "org.gnome.Nautilus.desktop"
-      "org.gnome.Console.desktop"
-      "org.gnome.Terminal.desktop"
+      "com.mitchellh.ghostty.desktop"
       "tv.plex.PlexDesktop.desktop"
       "com.plexamp.Plexamp.desktop"
       "org.gnome.Settings.desktop"
     ];
     "org/gtk/gtk4/settings/file-chooser".sort-directories-first = false;
     "org/gtk/settings/file-chooser".clock-format = "12h";
-  };
-
-  xdg.configFile = {
-    "gtk-3.0/bookmarks".text = ''
-      file:///home/amiceli/repo
-      file:///home/amiceli/Documents
-      file:///home/amiceli/Downloads
-      smb://mitsukoshi.local
-    '';
   };
 }
