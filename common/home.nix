@@ -28,7 +28,7 @@
           "ctrl+l=goto_split:right"
         ];
         window-height = 45;
-        window-width = 140;
+        window-width = 160;
       };
     };
 
