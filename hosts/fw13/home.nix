@@ -4,6 +4,7 @@
   home.username = "amiceli";
 
   home.packages = with pkgs; [
+    bambu-studio
     gnomeExtensions.appindicator
     gnomeExtensions.battery-usage-wattmeter
     gnomeExtensions.dash-to-dock
@@ -63,7 +64,9 @@
 
         export EDITOR="nano"
         eval "$(starship init bash)"
-        
+
+        export LD_LIBRARY_PATH=${pkgs.zlib}/lib:${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.glibc}/lib:${pkgs.glib}/lib:$LD_LIBRARY_PATH
+
         fastfetch
       '';
     };

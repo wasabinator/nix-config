@@ -8,6 +8,7 @@
 
   home.packages = with pkgs; [
     fastfetch
+    kcc
     rustup
     rust-script
     signal-desktop

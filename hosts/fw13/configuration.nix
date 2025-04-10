@@ -17,12 +17,16 @@
     configurationLimit = 10;
   };
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelParams = [ "mem_sleep_default=deep" ];
+  boot.kernelPackages = pkgs.linuxPackages_6_12;
+  boot.kernelParams = [
+    "amdgpu.sg_display=0"
+    "mem_sleep_default=deep"
+  ];
   boot.initrd.luks.devices."luks-4386fb32-c937-4460-8f81-8d0477ac5364".device = "/dev/disk/by-uuid/4386fb32-c937-4460-8f81-8d0477ac5364";
  
   # suspend then hibernate
   systemd.sleep.extraConfig = ''
-    HibernateDelaySec=15min
+    HibernateDelaySec=30min
   '';
   services.logind.lidSwitch = "suspend-then-hibernate";
 
@@ -37,6 +41,7 @@
   fonts.fontDir.enable = true;
   fonts.fontconfig.enable = true;
   fonts.packages = with pkgs; [
+    noto-fonts-cjk-sans
     jetbrains-mono
   ];
 
@@ -182,5 +187,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.11"; # Did you read the comment?
-
 }
