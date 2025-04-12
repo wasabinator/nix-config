@@ -4,19 +4,22 @@
   home.username = "amiceli";
 
   home.packages = with pkgs; [
+    android-studio
     bambu-studio
     gnomeExtensions.appindicator
     gnomeExtensions.battery-usage-wattmeter
     gnomeExtensions.dash-to-dock
     gnomeExtensions.tiling-shell
     gnome-tweaks
-    plex
+    plex-desktop
     plexamp
     protonvpn-gui
     sqlitebrowser
-    starship
-    synology-drive-client
+    signal-desktop
     steam-run
+    synology-drive-client
+    telegram-desktop
+    vivaldi
     vlc
   ];
 

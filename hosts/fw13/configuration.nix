@@ -17,8 +17,9 @@
     configurationLimit = 10;
   };
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_6_12;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelParams = [
+    "amdgpu.dcdebugmask=0x400"
     "amdgpu.sg_display=0"
     "mem_sleep_default=deep"
   ];
@@ -113,7 +114,10 @@
   services.printing.enable = true;
 
   # Enable sound with pipewire.
-  services.pulseaudio.enable = false;
+  hardware.pulseaudio.enable = false;
+  # For unstable nix:
+  #services.pulseaudio.enable = false;
+
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;

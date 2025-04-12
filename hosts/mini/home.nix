@@ -10,6 +10,8 @@
     brewCasks.plex
     brewCasks.plexamp
     dockutil
+    signal-desktop
+    telegram-desktop
     vlc-bin
   ];
 
