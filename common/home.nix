@@ -11,8 +11,8 @@
     kcc
     rustup
     rust-script
-    signal-desktop
-    telegram-desktop
+#    signal-desktop
+#    telegram-desktop
   ];
 
   programs = with pkgs; {
