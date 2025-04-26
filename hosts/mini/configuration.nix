@@ -18,6 +18,19 @@
   # Create /etc/zshrc that loads the nix-darwin environment.
   programs.zsh.enable = true;
 
+  homebrew = {
+    enable = true;
+    onActivation.cleanup = "uninstall";
+    casks = [
+      "firefox"
+      "ghostty"
+      "kindle-comic-converter"
+      "plex"
+      "plexamp"
+      "signal"
+    ];
+  };
+
   # Nerdfonts
   fonts.packages = with pkgs; [
     jetbrains-mono

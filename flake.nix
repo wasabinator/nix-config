@@ -3,7 +3,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/release-24.11";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nix-darwin = {
-      url = "github:LnL7/nix-darwin";
+      url = "github:lnl7/nix-darwin/nix-darwin-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
@@ -11,17 +11,10 @@
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    brew-nix = {
-      url = "github:BatteredBunny/brew-nix";
-      inputs.brew-api.follows = "brew-api";
-    };
-    brew-api = {
-      url = "github:BatteredBunny/brew-api";
-      flake = false;
-    };
-    mac-app-util.url = "github:hraban/mac-app-util";
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+    #mac-app-util.url = "github:hraban/mac-app-util";
   };
-  outputs = { self, nixpkgs, nixos-hardware, nix-darwin, nixos-wsl, home-manager, brew-nix, mac-app-util, ... }@inputs: {
+  outputs = { self, nixpkgs, nixos-hardware, nix-darwin, nixos-wsl, home-manager, nix-homebrew, ... }@inputs: {
     # frame.work 13
     nixosConfigurations.fw13 = nixpkgs.lib.nixosSystem {
       pkgs = import nixpkgs { 
@@ -48,20 +41,24 @@
       pkgs = import nixpkgs { 
         system = "aarch64-darwin"; 
         config.allowUnfree = true;
-        overlays = [ brew-nix.overlays.default ];
       };
       modules = [
         ./hosts/mini/configuration.nix
         home-manager.darwinModules.home-manager {
-          nixpkgs.overlays = [ brew-nix.overlays.default ];
           home-manager.useGlobalPkgs = true;
           home-manager.extraSpecialArgs = { inherit inputs; };
           home-manager.users.amiceli.imports = [
-            mac-app-util.homeManagerModules.default
             ./common/home.nix
             ./hosts/mini/home.nix
           ];
           home-manager.backupFileExtension = "home-manager-backup";
+        }
+        nix-homebrew.darwinModules.nix-homebrew
+        {
+          nix-homebrew = {
+            enable = true;
+            user = "amiceli";
+          };
         }
       ];
       specialArgs = {

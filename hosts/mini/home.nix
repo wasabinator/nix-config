@@ -5,12 +5,7 @@
   home.homeDirectory = "/Users/amiceli";
 
   home.packages = with pkgs; [
-    brewCasks.firefox
-    brewCasks.ghostty
-    brewCasks.plex
-    brewCasks.plexamp
     dockutil
-    signal-desktop
     telegram-desktop
     vlc-bin
   ];
@@ -77,10 +72,9 @@
   home.activation.createDirs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.dockutil}/bin/dockutil \
       --remove all \
-      --add /Applications/Launchpad.app \
-      --add "${pkgs.brewCasks.ghostty}/Applications/Ghostty.app" \
-      --add "${pkgs.brewCasks.firefox}/Applications/Firefox.app" \
-      --add "${pkgs.signal-desktop}/Applications/Signal.app" \
+      --add /Applications/Ghostty.app \
+      --add /Applications/Firefox.app \
+      --add /Applications/Signal.app \
       --add "${pkgs.telegram-desktop}/Applications/Telegram.app" \
       --add /System/Applications/Calendar.app \
       --add /System/Applications/Notes.app \
