@@ -19,8 +19,14 @@
     steam-run
     synology-drive-client
     telegram-desktop
-    vivaldi
     vlc
+  ];
+
+  services.flatpak.packages = [
+    "com.bambulab.BambuStudio"
+    "com.github.tchx84.Flatseal"
+    "com.system76.Popsicle"
+    "io.github.ciromattia.kcc"
   ];
 
   xdg = {

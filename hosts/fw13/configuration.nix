@@ -19,7 +19,8 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelParams = [
-    "amdgpu.dcdebugmask=0x400"
+    "amd_pmf.disable=1"
+    "amdgpu.dcdebugmask=0x412"
     "amdgpu.sg_display=0"
     "mem_sleep_default=deep"
   ];
@@ -30,6 +31,13 @@
     HibernateDelaySec=30min
   '';
   services.logind.lidSwitch = "suspend-then-hibernate";
+
+  # Cosmic DE
+  #services.displayManager.cosmic-greeter.enable = true;
+  #services.desktopManager.cosmic.enable = true;
+
+  # Enable flatpak support
+  services.flatpak.enable = true;
 
   networking.hostName = "fw13"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.

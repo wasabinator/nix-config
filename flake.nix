@@ -1,20 +1,20 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/release-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/release-25.05";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nix-darwin = {
-      url = "github:lnl7/nix-darwin/nix-darwin-24.11";
+      url = "github:lnl7/nix-darwin/nix-darwin-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
-    #mac-app-util.url = "github:hraban/mac-app-util";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
   };
-  outputs = { self, nixpkgs, nixos-hardware, nix-darwin, nixos-wsl, home-manager, nix-homebrew, ... }@inputs: {
+  outputs = { self, nixpkgs, nixos-hardware, nix-darwin, nixos-wsl, home-manager, nix-homebrew, nix-flatpak, ... }@inputs: {
     # frame.work 13
     nixosConfigurations.fw13 = nixpkgs.lib.nixosSystem {
       pkgs = import nixpkgs { 
@@ -28,6 +28,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.extraSpecialArgs = { inherit inputs; };
           home-manager.users.amiceli.imports = [
+            nix-flatpak.homeManagerModules.nix-flatpak
             ./common/home.nix 
             ./hosts/fw13/home.nix
           ];
