@@ -10,7 +10,7 @@ Build with `sudo nixos-rebuild switch --flake .#hostname`
 
 Installation:
 
-- Install Determinate Nix Installer, choosing no at the first option
+- Install Determinate Nix Installer, via `curl -fsSL https://install.determinate.systems/nix | sh -s -- install`, and at the first prompt say no to installing the determinate service (nix-darwin will be taking this responsibility).
 - Setup nix-darwin with: `nix run nix-darwin --extra-experimental-features nix-command --extra-experimental-features flakes -- switch --flake .#hostname`
 - Now config is managed via `darwin-rebuild`
 
