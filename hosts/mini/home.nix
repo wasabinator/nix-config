@@ -75,6 +75,8 @@
       --add /Applications/Ghostty.app \
       --add /Applications/Firefox.app \
       --add /Applications/Signal.app \
+      --add /Applications/Plex.app \
+      --add /Applications/Plexamp.app \
       --add "${pkgs.telegram-desktop}/Applications/Telegram.app" \
       --add /System/Applications/Calendar.app \
       --add /System/Applications/Notes.app \

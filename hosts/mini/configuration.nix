@@ -22,10 +22,18 @@
 
   homebrew = {
     enable = true;
-    onActivation.cleanup = "uninstall";
+    onActivation = {
+      autoUpdate = true;
+      cleanup = "uninstall";
+      upgrade = true;
+    };
+    brews = [
+      "ffmpeg"
+    ];
     casks = [
       "firefox"
       "ghostty"
+      "handbrake"
       "kindle-comic-converter"
       "plex"
       "plexamp"

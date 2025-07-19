@@ -1,3 +1,3 @@
 #!/bin/sh
-darwin-rebuild switch --flake .#mini
+sudo darwin-rebuild switch --flake .#mini
 
