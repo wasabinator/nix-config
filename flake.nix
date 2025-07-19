@@ -29,7 +29,7 @@
           home-manager.extraSpecialArgs = { inherit inputs; };
           home-manager.users.amiceli.imports = [
             nix-flatpak.homeManagerModules.nix-flatpak
-            ./common/home.nix 
+            ./hosts/common/home.nix 
             ./hosts/fw13/home.nix
           ];
           home-manager.backupFileExtension = "home-manager-backup";
@@ -44,13 +44,43 @@
         config.allowUnfree = true;
       };
       modules = [
-        ./hosts/mini/configuration.nix
+        ./hosts/mac/mini/configuration.nix
         home-manager.darwinModules.home-manager {
           home-manager.useGlobalPkgs = true;
           home-manager.extraSpecialArgs = { inherit inputs; };
           home-manager.users.amiceli.imports = [
-            ./common/home.nix
-            ./hosts/mini/home.nix
+            ./hosts/common/home.nix
+            ./hosts/mac/common/home.nix
+          ];
+          home-manager.backupFileExtension = "home-manager-backup";
+        }
+        nix-homebrew.darwinModules.nix-homebrew
+        {
+          nix-homebrew = {
+            enable = true;
+            user = "amiceli";
+          };
+        }
+      ];
+      specialArgs = {
+        inherit self inputs nix-darwin;
+      };
+    };
+
+    # macbook air m3
+    darwinConfigurations.air = nix-darwin.lib.darwinSystem {
+      pkgs = import nixpkgs {
+        system = "aarch64-darwin";
+        config.allowUnfree = true;
+      };
+      modules = [
+        ./hosts/mac/air/configuration.nix
+        home-manager.darwinModules.home-manager {
+          home-manager.useGlobalPkgs = true;
+          home-manager.extraSpecialArgs = { inherit inputs; };
+          home-manager.users.amiceli.imports = [
+            ./hosts/common/home.nix
+            ./hosts/mac/common/home.nix
           ];
           home-manager.backupFileExtension = "home-manager-backup";
         }
@@ -85,7 +115,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.extraSpecialArgs = { inherit inputs; };
           home-manager.users.amiceli.imports = [
-            ./common/home.nix 
+            ./hosts/common/home.nix 
             ./hosts/wsl/home.nix
           ];
           home-manager.backupFileExtension = "home-manager-backup";
