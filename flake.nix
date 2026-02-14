@@ -1,14 +1,14 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/release-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/release-25.11";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nix-darwin = {
-      url = "github:lnl7/nix-darwin/nix-darwin-25.05";
+      url = "github:lnl7/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
@@ -34,6 +34,17 @@
           ];
           home-manager.backupFileExtension = "home-manager-backup";
         }
+      ];
+    };
+
+    # gaming pc
+    nixosConfigurations.steambox = nixpkgs.lib.nixosSystem {
+      pkgs = import nixpkgs { 
+        system = "x86_64-linux"; 
+        config.allowUnfree = true;
+      };
+      modules = [ 
+        ./hosts/steambox/configuration.nix
       ];
     };
 
