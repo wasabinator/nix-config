@@ -15,7 +15,8 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_6_18; 
+  #linuxPackages_latest; will not currently work with latest nvidia driver (ref: https://github.com/nixos/nixpkgs/issues/489947)
 
   networking.hostName = "steambox"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -46,11 +47,28 @@
   };
 
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
+  services.xserver = {
+    enable = true;
+    videoDrivers = ["nvidia"];
+  };
+
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+
+  hardware.nvidia = {
+    open = false;
+    nvidiaSettings = true;
+
+    powerManagement.enable = true;
+    modesetting.enable = true;
+    dynamicBoost.enable = true;
+  };
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -103,12 +121,24 @@
     };
   };
 
+  programs.steam = {
+    enable = true;
+    gamescopeSession.enable = true;
+  };
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    mangohud
+    protonup-ng
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #  wget
   ];
+
+  environment.sessionVariables = {
+    STEAM_EXTRA_COMPAT_TOOLS_PATHS =
+      "/home/user/.steam/root/compatibilitytools.d";
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
