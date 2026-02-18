@@ -14,124 +14,43 @@
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
   };
-  outputs = { self, nixpkgs, nixos-hardware, nix-darwin, nixos-wsl, home-manager, nix-homebrew, nix-flatpak, ... }@inputs: {
-    # frame.work 13
-    nixosConfigurations.fw13 = nixpkgs.lib.nixosSystem {
-      pkgs = import nixpkgs { 
-        system = "x86_64-linux"; 
-        config.allowUnfree = true;
+  outputs = { self, nixpkgs, nixos-hardware, nix-darwin, nixos-wsl, home-manager, nix-homebrew, nix-flatpak, ... }@inputs:
+    let
+      mkDarwinSystem = import ./lib/mkDarwinSystem.nix {
+        inherit nix-darwin nixpkgs home-manager nix-homebrew inputs self;
       };
-      modules = [ 
-        nixos-hardware.nixosModules.framework-13-7040-amd
-        ./hosts/fw13/configuration.nix
-        home-manager.nixosModules.home-manager {
-          home-manager.useGlobalPkgs = true;
-          home-manager.extraSpecialArgs = { inherit inputs; };
-          home-manager.users.amiceli.imports = [
+      mkNixosSystem = import ./lib/mkNixosSystem.nix {
+        inherit nixpkgs home-manager inputs self;
+      };
+    in {
+      nixosConfigurations = {
+        fw13 = mkNixosSystem {
+          hostname = "fw13";
+          extraModules = [ nixos-hardware.nixosModules.framework-13-7040-amd ];
+          homeModules = [
             nix-flatpak.homeManagerModules.nix-flatpak
-            ./hosts/common/home.nix 
-            ./hosts/fw13/home.nix
+            (self + "/hosts/fw13/home.nix")
           ];
-          home-manager.backupFileExtension = "home-manager-backup";
-        }
-      ];
-    };
-
-    # gaming pc
-    nixosConfigurations.steambox = nixpkgs.lib.nixosSystem {
-      pkgs = import nixpkgs { 
-        system = "x86_64-linux"; 
-        config.allowUnfree = true;
-      };
-      modules = [ 
-        ./hosts/steambox/configuration.nix
-      ];
-    };
-
-    # mac mini m4
-    darwinConfigurations.mini = nix-darwin.lib.darwinSystem {
-      pkgs = import nixpkgs { 
-        system = "aarch64-darwin"; 
-        config.allowUnfree = true;
-      };
-      modules = [
-        ./hosts/mac/mini/configuration.nix
-        home-manager.darwinModules.home-manager {
-          home-manager.useGlobalPkgs = true;
-          home-manager.extraSpecialArgs = { inherit inputs; };
-          home-manager.users.amiceli.imports = [
-            ./hosts/common/home.nix
-            ./hosts/mac/common/home.nix
+        };
+        steambox = mkNixosSystem {
+          hostname = "steambox";
+        };
+        wsl = mkNixosSystem {
+          hostname = "wsl";
+          extraModules = [
+            nixos-wsl.nixosModules.default
+            {
+              system.stateVersion = "24.11";
+              wsl.defaultUser = "amiceli";
+              wsl.enable = true;
+            }
           ];
-          home-manager.backupFileExtension = "home-manager-backup";
-        }
-        nix-homebrew.darwinModules.nix-homebrew
-        {
-          nix-homebrew = {
-            enable = true;
-            user = "amiceli";
-          };
-        }
-      ];
-      specialArgs = {
-        inherit self inputs nix-darwin;
+          homeModules = [ (self + "/hosts/wsl/home.nix") ];
+        };
+      };
+      darwinConfigurations = {
+        air = mkDarwinSystem { hostname = "air"; };
+        mini = mkDarwinSystem { hostname = "mini"; };
       };
     };
-
-    # macbook air m3
-    darwinConfigurations.air = nix-darwin.lib.darwinSystem {
-      pkgs = import nixpkgs {
-        system = "aarch64-darwin";
-        config.allowUnfree = true;
-      };
-      modules = [
-        ./hosts/mac/air/configuration.nix
-        home-manager.darwinModules.home-manager {
-          home-manager.useGlobalPkgs = true;
-          home-manager.extraSpecialArgs = { inherit inputs; };
-          home-manager.users.amiceli.imports = [
-            ./hosts/common/home.nix
-            ./hosts/mac/common/home.nix
-          ];
-          home-manager.backupFileExtension = "home-manager-backup";
-        }
-        nix-homebrew.darwinModules.nix-homebrew
-        {
-          nix-homebrew = {
-            enable = true;
-            user = "amiceli";
-          };
-        }
-      ];
-      specialArgs = {
-        inherit self inputs nix-darwin;
-      };
-    };
-
-    # NixOS-WSL configuration
-    nixosConfigurations.wsl = nixpkgs.lib.nixosSystem {
-      #system = "x86_64-linux";
-      pkgs = import nixpkgs { 
-        system = "x86_64-linux"; 
-        config.allowUnfree = true;
-      };
-      modules = [
-        nixos-wsl.nixosModules.default
-        {
-          system.stateVersion = "24.11";
-          wsl.defaultUser = "amiceli";
-          wsl.enable = true;
-        }
-        home-manager.nixosModules.home-manager {
-          home-manager.useGlobalPkgs = true;
-          home-manager.extraSpecialArgs = { inherit inputs; };
-          home-manager.users.amiceli.imports = [
-            ./hosts/common/home.nix 
-            ./hosts/wsl/home.nix
-          ];
-          home-manager.backupFileExtension = "home-manager-backup";
-        }
-      ];
-    };
-  };
 }

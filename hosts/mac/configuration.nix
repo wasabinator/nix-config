@@ -1,6 +1,7 @@
 { nix-darwin, pkgs, ... }: {
   # Necessary for using flakes on this system.
   nix.settings.experimental-features = "nix-command flakes";
+  nix.enable = false; #allow nix-darwin to work with determinate nix
 
   system.configurationRevision = nix-darwin.rev or nix-darwin.dirtyRev or null;
 
@@ -28,8 +29,13 @@
       upgrade = true;
     };
     casks = [
+      "bambu-studio"
       "firefox"
+      "flowvision"
       "ghostty"
+      "iina"
+      "kindle-comic-converter"
+      "maczip"
       "plex"
       "plexamp"
       "signal"
@@ -41,6 +47,8 @@
     jetbrains-mono
   ];
 
-  environment.systemPackages = [ ];
+  environment.systemPackages = with pkgs; [
+    p7zip 
+  ];
 }
 

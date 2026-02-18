@@ -32,7 +32,7 @@
           "git"
         ];
       };
-      initExtra = ''
+      initContent = ''
         fastfetch
       '';
     };
