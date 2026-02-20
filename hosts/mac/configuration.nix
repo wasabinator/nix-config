@@ -13,9 +13,6 @@
       DSDontWriteNetworkStores = true;
       DSDontWriteUSBStores = true;
     };
-    "com.apple.spotlight" = {
-      DisableSpotlightIndexingOnExternalVolumes = true;
-    };
   };
 
   nixpkgs.hostPlatform = "aarch64-darwin";
