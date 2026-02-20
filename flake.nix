@@ -2,6 +2,10 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/release-25.11";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-darwin = {
       url = "github:lnl7/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -14,13 +18,13 @@
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
   };
-  outputs = { self, nixpkgs, nixos-hardware, nix-darwin, nixos-wsl, home-manager, nix-homebrew, nix-flatpak, ... }@inputs:
+  outputs = { self, nixpkgs, nixos-hardware, agenix, nix-darwin, nixos-wsl, home-manager, nix-homebrew, nix-flatpak, ... }@inputs:
     let
       mkDarwinSystem = import ./lib/mkDarwinSystem.nix {
-        inherit nix-darwin nixpkgs home-manager nix-homebrew inputs self;
+        inherit nix-darwin nixpkgs agenix home-manager nix-homebrew inputs self;
       };
       mkNixosSystem = import ./lib/mkNixosSystem.nix {
-        inherit nixpkgs home-manager inputs self;
+        inherit nixpkgs home-manager agenix inputs self;
       };
     in {
       nixosConfigurations = {

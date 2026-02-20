@@ -1,9 +1,7 @@
-{ config, lib, pkgs, ... }:
-
+{ config, lib, pkgs, inputs, hostname, ... }:
 {
   home.username = "amiceli";
   home.homeDirectory = "/Users/amiceli";
-
   home.packages = with pkgs; [
     dockutil
     telegram-desktop
@@ -12,17 +10,28 @@
 
   programs = with pkgs; {
     home-manager.enable = true;
-
     dircolors = {
       enable = true;
       enableZshIntegration = true;
     };
-
     direnv = {
       enable = true;
       enableZshIntegration = true;
     };
-
+    ssh = {
+      enable = true;
+      enableDefaultConfig = false;
+      matchBlocks = {
+        "*" = {
+          addKeysToAgent = "yes";
+        };
+        "github.com" = {
+          hostname = "github.com";
+          user = "git";
+          identityFile = "/run/agenix/github";
+        };
+      };
+    };
     zsh = {
       autocd = true;
       enable = true;
@@ -58,7 +67,6 @@
       ShowPathbar = true;
       ShowStatusBar = false;
       show-recents = false;
-      #recent-apps = [ ];
     };
     NSGlobalDomain = {
       AppleShowAllExtensions = true;

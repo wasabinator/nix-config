@@ -1,4 +1,4 @@
-{ nix-darwin, pkgs, ... }: {
+{ self, config, nix-darwin, pkgs, ... }: {
   # Necessary for using flakes on this system.
   nix.settings.experimental-features = "nix-command flakes";
   nix.enable = false; #allow nix-darwin to work with determinate nix
@@ -27,6 +27,12 @@
 
   # Create /etc/zshrc that loads the nix-darwin environment.
   programs.zsh.enable = true;
+
+  age.secrets.github = {
+    file = self + "/secrets/air/github.age";
+    mode = "0600";
+    owner = "amiceli";
+  };
 
   homebrew = {
     enable = true;

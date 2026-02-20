@@ -1,19 +1,23 @@
-{ nix-darwin, nixpkgs, home-manager, nix-homebrew, inputs, self }:
+{ nix-darwin, nixpkgs, agenix, home-manager, nix-homebrew, inputs, self }:
 { hostname, system ? "aarch64-darwin" }:
 
 nix-darwin.lib.darwinSystem {
+  inherit system;
   pkgs = import nixpkgs {
     inherit system;
     config.allowUnfree = true;
   };
   modules = [
-    ../hosts/mac/configuration.nix { networking.hostName = hostname; }
-    home-manager.darwinModules.home-manager {
+    (self + "/hosts/mac/configuration.nix")
+    { networking.hostName = hostname; }
+    agenix.darwinModules.default
+    home-manager.darwinModules.home-manager
+    {
       home-manager.useGlobalPkgs = true;
-      home-manager.extraSpecialArgs = { inherit inputs; };
+      home-manager.extraSpecialArgs = { inherit inputs hostname; };
       home-manager.users.amiceli.imports = [
-        ../hosts/common/home.nix
-        ../hosts/mac/common/home.nix
+        (self + "/hosts/common/home.nix")
+        (self + "/hosts/mac/home.nix")
       ];
       home-manager.backupFileExtension = "home-manager-backup";
     }

@@ -1,4 +1,4 @@
-{ nixpkgs, home-manager, inputs, self }:
+{ nixpkgs, home-manager, agenix, inputs, self }:
 { hostname, system ? "x86_64-linux", extraModules ? [], homeModules ? [] }:
 
 nixpkgs.lib.nixosSystem {
@@ -11,11 +11,12 @@ nixpkgs.lib.nixosSystem {
     home-manager.nixosModules.home-manager
     {
       home-manager.useGlobalPkgs = true;
-      home-manager.extraSpecialArgs = { inherit inputs; };
+      home-manager.extraSpecialArgs = { inherit inputs hostname; };
       home-manager.users.amiceli.imports = [
         (self + "/hosts/common/home.nix")
       ] ++ homeModules;
       home-manager.backupFileExtension = "home-manager-backup";
     }
+    agenix.nixosModules.default
   ] ++ extraModules;
 }
