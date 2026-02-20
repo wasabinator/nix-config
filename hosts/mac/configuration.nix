@@ -8,6 +8,16 @@
   # Used for backwards compatibility. please read the changelog before changing: `darwin-rebuild changelog`.
   system.stateVersion = 5;
 
+  system.defaults.CustomUserPreferences = {
+    "com.apple.desktopservices" = {
+      DSDontWriteNetworkStores = true;
+      DSDontWriteUSBStores = true;
+    };
+    "com.apple.spotlight" = {
+      DisableSpotlightIndexingOnExternalVolumes = true;
+    };
+  };
+
   nixpkgs.hostPlatform = "aarch64-darwin";
 
   # Declare the user that will be running `nix-darwin`.

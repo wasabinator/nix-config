@@ -33,8 +33,12 @@
 
     git = {
       enable = true;
-      userEmail = "6946957+wasabinator@users.noreply.github.com";
-      userName = "Tony Miceli";
+      settings = {
+        user = {
+          email = "6946957+wasabinator@users.noreply.github.com";
+          name = "Tony Miceli";
+        };
+      };
       ignores = [
         ".DS_Store"
         ".direnv"
