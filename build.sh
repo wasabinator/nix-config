@@ -1,7 +1,7 @@
 #!/bin/bash
 
-REPO_HTTPS="https://github.com/amiceli/nix-config.git"
-REPO_SSH="git@github.com:amiceli/nix-config.git"
+REPO_HTTPS="https://github.com/wasabinator/nix-config.git"
+REPO_SSH="git@github.com:wasabinator/nix-config.git"
 
 DARWIN_HOSTS=("air" "mini")
 NIXOS_HOSTS=("fw13" "steambox" "wsl")
