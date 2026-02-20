@@ -14,7 +14,7 @@ if [[ -z "$HOST" ]]; then
   echo "NixOS hosts:  ${NIXOS_HOSTS[@]}"
   echo ""
   echo "Bootstrap from scratch:"
-  echo "  curl -fsSL https://raw.githubusercontent.com/amiceli/nix-config/main/build.sh | bash -s <host>"
+  echo "  curl -fsSL https://raw.githubusercontent.com/wasabinator/nix-config/main/build.sh | bash -s <host>"
   exit 1
 fi
 
@@ -28,7 +28,15 @@ fi
 
 do_rebuild() {
   if [[ " ${DARWIN_HOSTS[@]} " =~ " ${HOST} " ]]; then
-    sudo darwin-rebuild switch --flake .#$HOST
+    if command -v darwin-rebuild &> /dev/null; then
+      sudo darwin-rebuild switch --flake .#$HOST
+    else
+      echo "darwin-rebuild not found, running initial nix-darwin install..."
+      sudo -H nix run nix-darwin \
+        --extra-experimental-features nix-command \
+        --extra-experimental-features flakes \
+        -- switch --flake .#$HOST
+    fi
   else
     sudo nixos-rebuild switch --flake .#$HOST
   fi
