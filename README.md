@@ -2,17 +2,15 @@
 
 My Nix config for various systems
 
-## NixOS hosts
+## Initial setup
 
-Build with `sudo nixos-rebuild switch --flake .#hostname`
+- Ensure your /etc/ssh/ssh_host_ed25519_key (unique to host) and ~/.ssh/agenix (unique to repo) keys exist.
 
-## macOS hosts
+## macOS initial setup
 
-Installation:
+- Install Determinate Nix Installer, via `curl -fsSL https://install.determinate.systems/nix | sh -s -- install`.
 
-- Install Determinate Nix Installer, via `curl -fsSL https://install.determinate.systems/nix | sh -s -- install`, and at the first prompt say no to installing the determinate service (nix-darwin will be taking this responsibility).
-- Setup nix-darwin with: `nix run nix-darwin --extra-experimental-features nix-command --extra-experimental-features flakes -- switch --flake .#hostname`
-- Now config is managed via `darwin-rebuild`
+## NixOS and macOS hosts
 
-Build with `darwin-rebuild switch --flake .#hostname`
-
+- Initial build: `curl -fsSL https://raw.githubusercontent.com/wasabinator/nix-config/main/build.sh | bash -s $HOST`
+- Subsequent builds: `./build.sh $HOST`
