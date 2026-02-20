@@ -30,6 +30,6 @@ nix-darwin.lib.darwinSystem {
     }
   ];
   specialArgs = {
-    inherit self inputs nix-darwin;
+    inherit self inputs nix-darwin hostname;
   };
 }
