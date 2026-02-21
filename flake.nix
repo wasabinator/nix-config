@@ -36,6 +36,14 @@
             (self + "/hosts/fw13/home.nix")
           ];
         };
+        rb14 = mkNixosSystem {
+          hostname = "rb14";
+          extraModules = [ ];
+          homeModules = [
+            nix-flatpak.homeManagerModules.nix-flatpak
+            (self + "/hosts/rb14/home.nix")
+          ];
+        };
         steambox = mkNixosSystem {
           hostname = "steambox";
         };

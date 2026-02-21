@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 
 REPO_HTTPS="https://github.com/wasabinator/nix-config.git"
 REPO_SSH="git@github.com:wasabinator/nix-config.git"
 
 DARWIN_HOSTS=("air" "mini")
-NIXOS_HOSTS=("fw13" "steambox" "wsl")
+NIXOS_HOSTS=("fw13" "rb14" "steambox" "wsl")
 
 HOST=$1
 
@@ -68,7 +68,7 @@ fi
 
 echo "Starting bootstrap for host: $HOST"
 
-nix shell github:ryantm/agenix nixpkgs#git --command bash -c "
+nix shell github:ryantm/agenix nixpkgs#git --extra-experimental-features nix-command --extra-experimental-features flakes --command bash -c "
   set -e
 
   echo 'Cloning nix-config...'

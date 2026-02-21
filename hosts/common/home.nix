@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   home.stateVersion = "24.11";
@@ -16,8 +16,7 @@
     home-manager.enable = true;
 
     ghostty = {
-      #nix-darwin target is currently broken, so needs to be enabled for linux only, and we just use this to specify the config but install via brew-nix on darwin
-      #enable = true;
+      enable = true;
       settings = {
         theme = "LiquidCarbonTransparent";
         font-family = "Jetbrains Mono";
@@ -66,3 +65,4 @@
     EDITOR = "nano";
   };
 }
+

@@ -18,5 +18,14 @@ nixpkgs.lib.nixosSystem {
       home-manager.backupFileExtension = "home-manager-backup";
     }
     agenix.nixosModules.default
+    {
+      age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+      age.secrets.github = {
+        file = self + "/secrets/$hostname/github.age";
+        mode = "0600";
+        owner = "amiceli";
+      };
+    }
   ] ++ extraModules;
 }
+
