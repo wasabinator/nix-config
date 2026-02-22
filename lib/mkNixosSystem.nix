@@ -21,7 +21,7 @@ nixpkgs.lib.nixosSystem {
     {
       age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
       age.secrets.github = {
-        file = self + "/secrets/$hostname/github.age";
+        file = self + "/secrets/${hostname}/github.age";
         mode = "0600";
         owner = "amiceli";
       };

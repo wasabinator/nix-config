@@ -10,14 +10,19 @@
       ./hardware-configuration.nix
     ];
 
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.systemd-boot.configurationLimit = 10;
+  boot.kernelParams = [ 
+    "nvidia_drm.modeset=1"
+  ];
   boot.extraModprobeConfig = ''
     options nvidia NVreg_DynamicPowerManagementVideoMemoryThreshold=200
     options nvidia NVreg_PreserveVideoMemoryAllocations=1
   '';
-
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_6_18; 
@@ -54,7 +59,7 @@
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
-    videoDrivers = ["nvidia"];
+    videoDrivers = ["amdgpu" "nvidia"];
   };
 
   hardware.graphics = {
@@ -62,12 +67,14 @@
     enable32Bit = true;
   };
 
+  hardware.amdgpu.initrd.enable = true;
+  hardware.enableRedistributableFirmware = true;
+  
   hardware.nvidia = {
     open = false;
     nvidiaSettings = true;
 
     modesetting.enable = true;
-    dynamicBoost.enable = true;
 
     prime = {
       offload = {
@@ -82,16 +89,23 @@
     powerManagement.finegrained = true;  # turns off GPU when not in use
   };
 
-  environment.variables = {
-    MUTTER_DEBUG_FORCE_KMS_MODE = "simple";
-    __GLX_VENDOR_LIBRARY_NAME = "mesa";
-  };
+  systemd.services.nvidia-resume.enable = true;
+  systemd.services.nvidia-suspend.enable = true;
+  systemd.services.nvidia-hibernate.enable = true;
+
+  services.udev.extraRules = ''
+    ENV{DEVNAME}=="/dev/dri/card2", TAG+="mutter-device-preferred-primary"
+  '';
   services.supergfxd.enable = true;
+
+  environment.sessionVariables = {
+    "__EGL_VENDOR_LIBRARY_FILENAMES" = "/run/opengl-driver/share/glvnd/egl_vendor.d/50_mesa.json";
+  };
 
   # Enable the GNOME Desktop Environment.
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
-
+  
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "au";
