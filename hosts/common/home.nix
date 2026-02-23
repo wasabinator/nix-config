@@ -44,6 +44,21 @@
       ];
     };
 
+    ssh = {
+      enable = true;
+      enableDefaultConfig = false;
+      matchBlocks = {
+        "*" = {
+          addKeysToAgent = "yes";
+        };
+        "github.com" = {
+          hostname = "github.com";
+          user = "git";
+          identityFile = "/run/agenix/github";
+        };
+      };
+    };
+
     starship = {
       enable = true;
       settings = {
