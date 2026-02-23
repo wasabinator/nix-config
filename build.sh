@@ -1,8 +1,6 @@
 #!/bin/sh
-
 REPO_HTTPS="https://github.com/wasabinator/nix-config.git"
 REPO_SSH="git@github.com:wasabinator/nix-config.git"
-
 DARWIN_HOSTS=("air" "mini")
 NIXOS_HOSTS=("fw13" "rb14" "steambox" "wsl")
 
@@ -26,6 +24,20 @@ if [[ ! " ${DARWIN_HOSTS[@]} ${NIXOS_HOSTS[@]} " =~ " ${HOST} " ]]; then
   exit 1
 fi
 
+copy_hardware_config() {
+  if [[ " ${NIXOS_HOSTS[@]} " =~ " ${HOST} " ]]; then
+    local src="/etc/nixos/hardware-configuration.nix"
+    local dest="hosts/$HOST/hardware-configuration.nix"
+    if [[ ! -f "$src" ]]; then
+      echo "Error: $src not found"
+      exit 1
+    fi
+    echo "Copying $src -> $dest"
+    cp "$src" "$dest"
+    git add "$dest"
+  fi
+}
+
 do_rebuild() {
   if [[ " ${DARWIN_HOSTS[@]} " =~ " ${HOST} " ]]; then
     if command -v darwin-rebuild &> /dev/null; then
@@ -45,6 +57,7 @@ do_rebuild() {
 # check if we are already inside the repo
 if [[ -f flake.nix ]]; then
   echo "Running rebuild for $HOST from existing repo..."
+  copy_hardware_config
   do_rebuild
   exit 0
 fi
@@ -67,17 +80,13 @@ if [[ -d nix-config ]]; then
 fi
 
 echo "Starting bootstrap for host: $HOST"
-
 nix shell github:ryantm/agenix nixpkgs#git --extra-experimental-features nix-command --extra-experimental-features flakes --command bash -c "
   set -e
-
   echo 'Cloning nix-config...'
   git clone $REPO_HTTPS nix-config
   cd nix-config
-
   echo 'Switching remote to SSH...'
   git remote set-url origin $REPO_SSH
-
   echo 'Running rebuild for $HOST...'
   ./build.sh $HOST
 "

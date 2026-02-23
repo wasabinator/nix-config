@@ -93,13 +93,31 @@
   systemd.services.nvidia-suspend.enable = true;
   systemd.services.nvidia-hibernate.enable = true;
 
+  systemd.services.nvidia-pm-resume-fix = {
+    description = "Reload NVIDIA module after resume to fix runtime PM";
+    after = [ "post-resume.target" ];
+    wantedBy = [ "post-resume.target" ];
+    path = [ pkgs.kmod ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeShellScript "nvidia-pm-fix" ''
+        modprobe -r nvidia_uvm nvidia_drm nvidia_modeset nvidia
+        modprobe nvidia
+      '';
+    };
+  };
+
   services.udev.extraRules = ''
     ENV{DEVNAME}=="/dev/dri/card2", TAG+="mutter-device-preferred-primary"
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{power/control}="auto"
   '';
+
   services.supergfxd.enable = true;
+
 
   environment.sessionVariables = {
     "__EGL_VENDOR_LIBRARY_FILENAMES" = "/run/opengl-driver/share/glvnd/egl_vendor.d/50_mesa.json";
+    "ELECTRON_EXTRA_LAUNCH_ARGS" = "--disable-gpu";
   };
 
   # Enable the GNOME Desktop Environment.
@@ -146,6 +164,13 @@
 
   # Install firefox.
   programs.firefox.enable = true;
+
+  # Steam
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = false;
+  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
