@@ -18,7 +18,7 @@
     ghostty = {
       enable = true;
       settings = {
-        theme = "LiquidCarbonTransparent";
+        #theme = "LiquidCarbonTransparent";
         font-family = "Jetbrains Mono";
         font-size = 12;
         keybind = [
