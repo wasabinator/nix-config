@@ -71,7 +71,7 @@
   hardware.enableRedistributableFirmware = true;
   
   hardware.nvidia = {
-    open = false;
+    open = true;
     nvidiaSettings = true;
 
     modesetting.enable = true;
@@ -93,27 +93,12 @@
   systemd.services.nvidia-suspend.enable = true;
   systemd.services.nvidia-hibernate.enable = true;
 
-  systemd.services.nvidia-pm-resume-fix = {
-    description = "Reload NVIDIA module after resume to fix runtime PM";
-    after = [ "post-resume.target" ];
-    wantedBy = [ "post-resume.target" ];
-    path = [ pkgs.kmod ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = pkgs.writeShellScript "nvidia-pm-fix" ''
-        modprobe -r nvidia_uvm nvidia_drm nvidia_modeset nvidia
-        modprobe nvidia
-      '';
-    };
-  };
-
   services.udev.extraRules = ''
     ENV{DEVNAME}=="/dev/dri/card2", TAG+="mutter-device-preferred-primary"
-    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{power/control}="auto"
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{remove}="1"
   '';
 
   services.supergfxd.enable = true;
-
 
   environment.sessionVariables = {
     "__EGL_VENDOR_LIBRARY_FILENAMES" = "/run/opengl-driver/share/glvnd/egl_vendor.d/50_mesa.json";
@@ -177,6 +162,13 @@
   environment.systemPackages = with pkgs; [
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #  wget
+
+    # This sidesteps an nvidia offload bug by manually waking the gpu prior to offloading
+    (pkgs.writeShellScriptBin "nvidia-run" ''
+      sudo ${pkgs.kmod}/bin/modprobe -r nvidia_uvm nvidia_drm nvidia_modeset nvidia
+      sudo ${pkgs.kmod}/bin/modprobe nvidia
+      nvidia-offload "$@"
+    '')
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

@@ -27,7 +27,7 @@ fi
 copy_hardware_config() {
   if [[ " ${NIXOS_HOSTS[@]} " =~ " ${HOST} " ]]; then
     local src="/etc/nixos/hardware-configuration.nix"
-    local dest="hosts/$HOST/hardware-configuration.nix"
+    local dest="hosts/${HOST}/hardware-configuration.nix"
     if [[ ! -f "$src" ]]; then
       echo "Error: $src not found"
       exit 1
