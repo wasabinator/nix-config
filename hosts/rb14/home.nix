@@ -15,7 +15,9 @@
     plexamp
     protonvpn-gui
     sqlitebrowser
-    signal-desktop
+    (signal-desktop.override {
+      commandLineArgs = "--disable-gpu";
+    })
     steam-run
     synology-drive-client
     vivaldi
