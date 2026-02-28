@@ -1,29 +1,35 @@
-{ nixpkgs, home-manager, agenix, inputs, self }:
-{ hostname, system ? "x86_64-linux", extraModules ? [], homeModules ? [] }:
-
+{ nixpkgs, home-manager, agenix, nix-flatpak, inputs, self }:
+{ hostname, username, system ? "x86_64-linux", extraModules ? [], homeModules ? [] }:
 nixpkgs.lib.nixosSystem {
   pkgs = import nixpkgs {
     inherit system;
     config.allowUnfree = true;
   };
+  specialArgs = { inherit inputs hostname username self; };
   modules = [
     (self + "/hosts/${hostname}/configuration.nix")
+    (self + "/users/nixos/${username}.nix")
+    { nix.settings.experimental-features = [ "nix-command" "flakes" ]; }
     home-manager.nixosModules.home-manager
     {
       home-manager.useGlobalPkgs = true;
-      home-manager.extraSpecialArgs = { inherit inputs hostname; };
-      home-manager.users.amiceli.imports = [
-        (self + "/hosts/common/home.nix")
-      ] ++ homeModules;
+      home-manager.extraSpecialArgs = { inherit inputs hostname username self; };
+      home-manager.users.${username} = {
+        imports = [
+          nix-flatpak.homeManagerModules.nix-flatpak
+          (self + "/hosts/${hostname}/home.nix")
+        ] ++ homeModules;
+        home.stateVersion = "25.11";
+      };
       home-manager.backupFileExtension = "home-manager-backup";
     }
     agenix.nixosModules.default
     {
       age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
       age.secrets.github = {
-        file = self + "/secrets/${hostname}/github.age";
+        file = self + "/secrets/${hostname}/${username}/github.age";
         mode = "0600";
-        owner = "amiceli";
+        owner = username;
       };
     }
   ] ++ extraModules;

@@ -20,49 +20,23 @@
   };
   outputs = { self, nixpkgs, nixos-hardware, agenix, nix-darwin, nixos-wsl, home-manager, nix-homebrew, nix-flatpak, ... }@inputs:
     let
+      username = "amiceli";
       mkDarwinSystem = import ./lib/mkDarwinSystem.nix {
         inherit nix-darwin nixpkgs agenix home-manager nix-homebrew inputs self;
       };
       mkNixosSystem = import ./lib/mkNixosSystem.nix {
-        inherit nixpkgs home-manager agenix inputs self;
+        inherit nixpkgs home-manager agenix nix-flatpak inputs self;
       };
     in {
       nixosConfigurations = {
-        fw13 = mkNixosSystem {
-          hostname = "fw13";
-          extraModules = [ nixos-hardware.nixosModules.framework-13-7040-amd ];
-          homeModules = [
-            nix-flatpak.homeManagerModules.nix-flatpak
-            (self + "/hosts/fw13/home.nix")
-          ];
-        };
-        rb14 = mkNixosSystem {
-          hostname = "rb14";
-          extraModules = [ ];
-          homeModules = [
-            nix-flatpak.homeManagerModules.nix-flatpak
-            (self + "/hosts/rb14/home.nix")
-          ];
-        };
-        steambox = mkNixosSystem {
-          hostname = "steambox";
-        };
-        wsl = mkNixosSystem {
-          hostname = "wsl";
-          extraModules = [
-            nixos-wsl.nixosModules.default
-            {
-              system.stateVersion = "24.11";
-              wsl.defaultUser = "amiceli";
-              wsl.enable = true;
-            }
-          ];
-          homeModules = [ (self + "/hosts/wsl/home.nix") ];
-        };
+        fw13 = mkNixosSystem { hostname = "fw13"; inherit username; };
+        rb14 = mkNixosSystem { hostname = "rb14"; inherit username; };
+        steambox = mkNixosSystem { hostname = "steambox"; inherit username; };
+        wsl = mkNixosSystem { hostname = "wsl"; inherit username; };
       };
       darwinConfigurations = {
         air = mkDarwinSystem { hostname = "air"; };
         mini = mkDarwinSystem { hostname = "mini"; };
       };
-    };
+  };
 }
