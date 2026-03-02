@@ -10,8 +10,7 @@ nixpkgs.lib.nixosSystem {
     (self + "/hosts/${hostname}/configuration.nix")
     (self + "/users/nixos/${username}.nix")
     { nix.settings.experimental-features = [ "nix-command" "flakes" ]; }
-    home-manager.nixosModules.home-manager
-    {
+    home-manager.nixosModules.home-manager {
       home-manager.useGlobalPkgs = true;
       home-manager.extraSpecialArgs = { inherit inputs hostname username self; };
       home-manager.users.${username} = {
@@ -23,8 +22,7 @@ nixpkgs.lib.nixosSystem {
       };
       home-manager.backupFileExtension = "home-manager-backup";
     }
-    agenix.nixosModules.default
-    {
+    agenix.nixosModules.default {
       age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
       age.secrets.github = {
         file = self + "/secrets/${hostname}/${username}/github.age";

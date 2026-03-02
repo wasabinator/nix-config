@@ -28,12 +28,6 @@
   # Create /etc/zshrc that loads the nix-darwin environment.
   programs.zsh.enable = true;
 
-  age.secrets.github = {
-    file = self + "/secrets/${hostname}/github.age";
-    mode = "0600";
-    owner = "amiceli";
-  };
-
   homebrew = {
     enable = true;
     onActivation = {

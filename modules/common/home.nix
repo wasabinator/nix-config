@@ -17,13 +17,10 @@
     enable = true;
     enableDefaultConfig = false;
     matchBlocks = {
-      "*" = {
-        addKeysToAgent = "yes";
-      };
       "github.com" = {
-        hostname = "github.com";
-        user = "git";
-        identityFile = "/run/agenix/github";
+        identityFile = if pkgs.stdenv.isDarwin
+          then "/private/var/run/agenix/github"
+          else "/run/agenix/github";
       };
     };
   };
