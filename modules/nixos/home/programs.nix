@@ -42,5 +42,13 @@
   };
 
   programs.ghostty.enable = true;
-}
 
+  programs.ssh = {
+    enable = true;
+    matchBlocks = {
+      "github.com" = {
+        identityFile = "/run/agenix/github";
+      };
+    };
+  };
+}
