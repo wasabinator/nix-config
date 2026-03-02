@@ -17,6 +17,17 @@
 
   # Printing
   services.printing.enable = true;
+  services.printing.browsing = true;
+  services.printing.browsedConf = ''
+    BrowseDNSSDSubTypes _cups,_print
+    BrowseLocalProtocols all
+    BrowseRemoteProtocols all
+    CreateIPPPrinterQueues All
+    BrowseProtocols all
+  '';
+  services.printing.drivers = with pkgs; [
+    cnijfilter2
+  ];
 
   # Firefox
   programs.firefox.enable = true;

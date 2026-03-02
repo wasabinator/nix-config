@@ -41,16 +41,16 @@ copy_hardware_config() {
 do_rebuild() {
   if [[ " ${DARWIN_HOSTS[@]} " =~ " ${HOST} " ]]; then
     if command -v darwin-rebuild &> /dev/null; then
-      sudo darwin-rebuild switch --flake .#$HOST
+      sudo darwin-rebuild switch --flake "$(pwd)#${HOST}"
     else
       echo "darwin-rebuild not found, running initial nix-darwin install..."
       sudo -H nix run nix-darwin \
         --extra-experimental-features nix-command \
         --extra-experimental-features flakes \
-        -- switch --flake .#$HOST
+        -- switch --flake "$(pwd)#${HOST}"
     fi
   else
-    sudo nixos-rebuild switch --flake .#$HOST
+    sudo nixos-rebuild switch --flake "$(pwd)#${HOST}"
   fi
 }
 
