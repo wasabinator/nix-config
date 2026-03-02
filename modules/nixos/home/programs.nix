@@ -41,7 +41,19 @@
     };
   };
 
-  programs.ghostty.enable = true;
+  programs.ghostty = {
+    enable = true;
+    settings = {
+      font-family = "Jetbrains Mono";
+      font-size = 12;
+      keybind = [
+        "ctrl+h=goto_split:left"
+        "ctrl+l=goto_split:right"
+      ];
+      window-height = 45;
+      window-width = 160;
+    };
+  };
 
   programs.ssh = {
     enable = true;

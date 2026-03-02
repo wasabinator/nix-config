@@ -1,14 +1,13 @@
 { ... }:
 {
   users.users.amiceli = {
-    isNormalUser = true;
-    description = "amiceli";
-    extraGroups = [ "networkmanager" "wheel" ];
+    name = "amiceli";
+    home = "/Users/amiceli";
   };
 
   home-manager.users.amiceli.programs.git = {
     enable = true;
-    ignores = [ ".direnv" ];
+    ignores = [ ".DS_Store" ".direnv" ];
     settings.user = {
       email = "6946957+wasabinator@users.noreply.github.com";
       name = "Tony Miceli";

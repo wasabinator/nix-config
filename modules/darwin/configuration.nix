@@ -52,6 +52,7 @@
       "plex"
       "plexamp"
       "signal"
+      "synology-drive"
     ];
   };
 

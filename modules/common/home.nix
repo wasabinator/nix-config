@@ -1,9 +1,6 @@
-{ config, pkgs, ... }:
-
+{ pkgs, ... }:
 {
-  home.stateVersion = "24.11";
-
-  # Force config files to go in ~/.config
+  home.stateVersion = "25.11";
   xdg.enable = true;
 
   home.packages = with pkgs; [
@@ -12,72 +9,38 @@
     rust-script
   ];
 
-  programs = with pkgs; {
-    home-manager.enable = true;
-
-    ghostty = {
-      enable = true;
-      settings = {
-        #theme = "LiquidCarbonTransparent";
-        font-family = "Jetbrains Mono";
-        font-size = 12;
-        keybind = [
-          "ctrl+h=goto_split:left"
-          "ctrl+l=goto_split:right"
-        ];
-        window-height = 45;
-        window-width = 160;
-      };
-    };
-
-    git = {
-      enable = true;
-      settings = {
-        user = {
-          email = "6946957+wasabinator@users.noreply.github.com";
-          name = "Tony Miceli";
-        };
-      };
-      ignores = [
-        ".DS_Store"
-        ".direnv"
-      ];
-    };
-
-    ssh = {
-      enable = true;
-      enableDefaultConfig = false;
-      matchBlocks = {
-        "*" = {
-          addKeysToAgent = "yes";
-        };
-        "github.com" = {
-          hostname = "github.com";
-          user = "git";
-          identityFile = "/run/agenix/github";
-        };
-      };
-    };
-
-    starship = {
-      enable = true;
-      settings = {
-        battery = {
-          format = "[$symbol$percentage]($style) ";
-          disabled = false;
-          display = [
-            {
-              style = "red bold";
-              threshold = 30;
-            }
-          ];
-        };
-      };
-    };
-  };
-
   home.sessionVariables = {
     EDITOR = "nano";
   };
-}
 
+  programs.ssh = {
+    enable = true;
+    enableDefaultConfig = false;
+    matchBlocks = {
+      "*" = {
+        addKeysToAgent = "yes";
+      };
+      "github.com" = {
+        hostname = "github.com";
+        user = "git";
+        identityFile = "/run/agenix/github";
+      };
+    };
+  };
+
+  programs.starship = {
+    enable = true;
+    settings = {
+      battery = {
+        format = "[$symbol$percentage]($style) ";
+        disabled = false;
+        display = [
+          {
+            style = "red bold";
+            threshold = 30;
+          }
+        ];
+      };
+    };
+  };
+}

@@ -35,8 +35,8 @@
         wsl = mkNixosSystem { hostname = "wsl"; inherit username; };
       };
       darwinConfigurations = {
-        air = mkDarwinSystem { hostname = "air"; };
-        mini = mkDarwinSystem { hostname = "mini"; };
+        air = mkDarwinSystem { hostname = "air"; inherit username; };
+        mini = mkDarwinSystem { hostname = "mini"; inherit username; };
       };
   };
 }

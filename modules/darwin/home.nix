@@ -4,9 +4,14 @@
   home.homeDirectory = "/Users/amiceli";
   home.packages = with pkgs; [
     dockutil
-    telegram-desktop
-    vlc-bin
+    #telegram-desktop
+    #vlc-bin
   ];
+
+disabledModules = [ 
+  "targets/darwin/linkapps.nix"
+  "targets/darwin/copyapps.nix"
+];
 
   programs = with pkgs; {
     home-manager.enable = true;
