@@ -3,9 +3,8 @@
   imports = [
     ./hardware-configuration.nix
     (self + "/modules/nixos/locale.nix")
-    (self + "/modules/nixos/fonts.nix")
     (self + "/modules/nixos/networking.nix")
-    (self + "/modules/nixos/desktop.nix")
+    (self + "/modules/nixos/system.nix")
   ];
 
   boot.loader.systemd-boot.enable = true;
@@ -36,6 +35,8 @@
     enable = true;
     gamescopeSession.enable = true;
   };
+
+  systemd.services.nvidia-powerd.enable = false;
 
   system.stateVersion = "25.11";
 }

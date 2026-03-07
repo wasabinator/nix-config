@@ -2,11 +2,10 @@
 {
 imports = [
   ./hardware-configuration.nix
-  ../../modules/nixos/locale.nix
-  ../../modules/nixos/fonts.nix
-  ../../modules/nixos/networking.nix
-  ../../modules/nixos/system.nix
-  ../../modules/nixos/laptop.nix
+  (self + "/modules/nixos/locale.nix")
+  (self + "/modules/nixos/networking.nix")
+  (self + "/modules/nixos/system.nix")
+  (self + "/modules/nixos/laptop.nix")
 ];
 
   boot.loader.systemd-boot.enable = true;
