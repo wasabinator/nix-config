@@ -35,6 +35,9 @@
       cleanup = "uninstall";
       upgrade = true;
     };
+    brews = [
+      "sevenzip"
+    ];
     casks = [
       "bambu-studio"
       "firefox"
