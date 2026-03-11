@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, self, ... }:
+{ config, pkgs, lib, inputs, username, self, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -27,13 +27,28 @@
     open = false;
     nvidiaSettings = true;
     modesetting.enable = true;
-    powerManagement.enable = true;
+    powerManagement.enable = false;
     dynamicBoost.enable = true;
+  };
+
+  programs.gamemode = {
+    enable = true;
+    enableRenice = true;
+    settings = {
+      general = {
+        renice = 10;
+      };
+    };
   };
 
   programs.steam = {
     enable = true;
     gamescopeSession.enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = false;
+    extraCompatPackages = with pkgs; [
+      proton-ge-bin  # community Proton with extra patches
+    ];
   };
 
   systemd.services.nvidia-powerd.enable = false;
