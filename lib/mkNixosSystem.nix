@@ -16,6 +16,7 @@ nixpkgs.lib.nixosSystem {
       home-manager.users.${username} = {
         imports = [
           nix-flatpak.homeManagerModules.nix-flatpak
+          (self + "/modules/common/home.nix")
           (self + "/hosts/${hostname}/home.nix")
         ] ++ homeModules;
         home.stateVersion = "25.11";

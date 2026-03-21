@@ -54,13 +54,4 @@
       window-width = 160;
     };
   };
-
-  programs.ssh = {
-    enable = true;
-    matchBlocks = {
-      "github.com" = {
-        identityFile = "/run/agenix/github";
-      };
-    };
-  };
 }

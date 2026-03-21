@@ -62,40 +62,6 @@ imports = [
     };
   };
 
-  specialisation = {
-    battery.configuration = {
-      system.nixos.tags = [ "battery" ];
-      hardware.nvidia.prime.offload.enable = lib.mkForce false;
-      hardware.nvidia.prime.offload.enableOffloadCmd = lib.mkForce false;
-      hardware.nvidia.powerManagement.finegrained = lib.mkForce false;
-      hardware.nvidia.powerManagement.enable = lib.mkForce false;
-      hardware.nvidia.modesetting.enable = lib.mkForce false;
-      boot.blacklistedKernelModules = [ "nvidia" "nvidia_drm" "nvidia_modeset" "nvidia_uvm" ];
-      services.udev.extraRules = lib.mkForce ''
-        SUBSYSTEM=="drm", DEVPATH=="*/0000:04:00.0/drm/card*", TAG+="mutter-device-preferred-primary"
-        ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{remove}="1"
-      '';
-      systemd.services.disable-dgpu = {
-        description = "Remove dGPU from PCI bus";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "systemd-udev-settle.service" ];
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.bash}/bin/bash -c 'echo 1 > /sys/bus/pci/devices/0000:01:00.0/remove'";
-        };
-      };
-      systemd.services.disable-dgpu-resume = {
-        description = "Remove dGPU from PCI bus after resume";
-        after = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
-        wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.bash}/bin/bash -c 'sleep 2 && echo 1 > /sys/bus/pci/devices/0000:01:00.0/remove'";
-        };
-      };
-    };
-  };
-
   systemd.services.nvidia-resume.enable = true;
   systemd.services.nvidia-suspend.enable = true;
   systemd.services.nvidia-hibernate.enable = true;
