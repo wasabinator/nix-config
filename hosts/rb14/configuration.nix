@@ -20,6 +20,9 @@ imports = [
     options nvidia NVreg_EnableS0ixPowerManagement=1
     options nvidia NVreg_S0ixPowerManagementVideoMemoryThreshold=0
   '';
+  boot.initrd.prepend = lib.mkOrder 0 [
+    "${(pkgs.callPackage ./custom-dsdt.nix {})}/dsdt.cpio"
+  ];
 
   networking.hostName = "rb14";
 
