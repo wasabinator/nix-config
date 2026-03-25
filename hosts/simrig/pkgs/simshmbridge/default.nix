@@ -23,9 +23,9 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "Spacefreak18";
     repo = "simshmbridge";
-    rev = "master";
+    rev = "740f64da83a3745c254778ac492f66bd7a972f9a";
     # Run: nix-prefetch-url --unpack https://github.com/Spacefreak18/simshmbridge/archive/master.tar.gz
-    hash = lib.fakeHash;
+    hash = "sha256-JpUEzwWLYoEaw2sdGICa9jf6Ut1BqhcBQz8XUk4BWDY=";
     fetchSubmodules = true;
   };
 

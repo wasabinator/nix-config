@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, inputs, username, ... }:
 
 {
   imports = [
@@ -16,6 +16,12 @@
 
   # Zen kernel — lower latency for sim racing, better responsiveness
   boot.kernelPackages = pkgs.linuxPackages_zen;
+
+  boot.kernelParams = [
+    "zswap.enabled=1"
+    "zswap.compressor=lz4"
+    "zswap.max_pool_percent=20"
+  ];
 
   # ============================================================
   # Networking
@@ -204,8 +210,8 @@
       Restart       = "on-failure";
       RestartSec    = "3s";
       # Run as the sim racing user so shared memory files have correct ownership
-      User  = "tony";
-      Group = "tony";
+      User  = username;
+      Group = username;
     };
   };
 
@@ -213,7 +219,7 @@
   # USB Device Access & udev Rules
   # ============================================================
 
-  users.users.tony = {
+  users.users.${username} = {
     isNormalUser = true;
     extraGroups = [
       "wheel"

@@ -1,4 +1,4 @@
-{ pkgs, lib, self, ... }:
+{ pkgs, lib, username, self, ... }:
 let
   imageTypes = map (t: "image/${t}") [
     "bmp" "jpeg" "gif" "png" "tiff" "x-bmp" "x-ico" "x-png"
@@ -71,9 +71,9 @@ in
     configFile."gtk-3.0/bookmarks" = {
       force = true;
       text = ''
-        file:///home/amiceli/repo
-        file:///home/amiceli/Documents
-        file:///home/amiceli/Downloads
+        file:///home/${username}/repo
+        file:///home/${username}/Documents
+        file:///home/${username}/Downloads
         smb://mitsukoshi.local
       '';
     };

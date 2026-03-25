@@ -12,9 +12,9 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "Spacefreak18";
     repo = "simapi";
-    rev = "master";
+    rev = "561ff2a687efad7c781acd4400ef28c74d716ba3";
     # Run: nix-prefetch-url --unpack https://github.com/Spacefreak18/simapi/archive/master.tar.gz
-    hash = lib.fakeHash;
+    hash = "sha256-KGJgomo0HCkv/WzuhJFesJZ9hfTL3lPKpA4W8scIaLQ=";
     fetchSubmodules = true;
   };
 

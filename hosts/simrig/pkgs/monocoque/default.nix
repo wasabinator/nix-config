@@ -22,9 +22,9 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "Spacefreak18";
     repo = "monocoque";
-    rev = "master";
+    rev = "10c172d3e1190a25361bed93f0b01c4d8540ebcf";
     # Run: nix-prefetch-url --unpack https://github.com/Spacefreak18/monocoque/archive/master.tar.gz
-    hash = lib.fakeHash;
+    hash = "sha256-5FYyEXd7HytpQ+IIERYRqAUAl2EuuAeKvr8lQXl9ysI=";
     fetchSubmodules = true;
   };
 

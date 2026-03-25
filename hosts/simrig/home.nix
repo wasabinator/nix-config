@@ -1,9 +1,9 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, username, ... }:
 
 {
-  home.username = "tony";
-  home.homeDirectory = "/home/tony";
-  home.stateVersion = "25.05"; # TODO: match your actual initial stateVersion
+  home.username = username;
+  home.homeDirectory = "/home/${username}";
+  home.stateVersion = "25.11";
 
   # ============================================================
   # Hyprland config
