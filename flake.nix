@@ -1,6 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/release-25.11";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     agenix = {
       url = "github:ryantm/agenix";
@@ -18,24 +19,25 @@
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
   };
-  outputs = { self, nixpkgs, nixos-hardware, agenix, nix-darwin, nixos-wsl, home-manager, nix-homebrew, nix-flatpak, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixos-hardware, agenix, nix-darwin, nixos-wsl, home-manager, nix-homebrew, nix-flatpak, ... }@inputs:
     let
       username = "amiceli";
       mkDarwinSystem = import ./lib/mkDarwinSystem.nix {
         inherit nix-darwin nixpkgs agenix home-manager nix-homebrew inputs self;
       };
       mkNixosSystem = import ./lib/mkNixosSystem.nix {
-        inherit nixpkgs home-manager agenix nix-flatpak inputs self;
+        inherit nixpkgs nixpkgs-unstable home-manager agenix nix-flatpak inputs self;
       };
     in {
       nixosConfigurations = {
-        fw13 = mkNixosSystem { hostname = "fw13"; inherit username; };
-        rb14 = mkNixosSystem { hostname = "rb14"; inherit username; };
+        fw13     = mkNixosSystem { hostname = "fw13";     inherit username; };
+        rb14     = mkNixosSystem { hostname = "rb14";     inherit username; };
+        simrig   = mkNixosSystem { hostname = "simrig";   inherit username; };
         steambox = mkNixosSystem { hostname = "steambox"; inherit username; };
-        wsl = mkNixosSystem { hostname = "wsl"; inherit username; };
+        wsl      = mkNixosSystem { hostname = "wsl";      inherit username; };
       };
       darwinConfigurations = {
-        air = mkDarwinSystem { hostname = "air"; inherit username; };
+        air  = mkDarwinSystem { hostname = "air";  inherit username; };
         mini = mkDarwinSystem { hostname = "mini"; inherit username; };
       };
   };

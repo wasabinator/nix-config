@@ -1,11 +1,17 @@
-{ nixpkgs, home-manager, agenix, nix-flatpak, inputs, self }:
+{ nixpkgs, nixpkgs-unstable, home-manager, agenix, nix-flatpak, inputs, self }:
 { hostname, username, system ? "x86_64-linux", extraModules ? [], homeModules ? [] }:
 nixpkgs.lib.nixosSystem {
   pkgs = import nixpkgs {
     inherit system;
     config.allowUnfree = true;
   };
-  specialArgs = { inherit inputs hostname username self; };
+  specialArgs = {
+    inherit inputs hostname username self;
+    pkgs-unstable = import nixpkgs-unstable {
+      inherit system;
+      config.allowUnfree = true;
+    };
+  };
   modules = [
     (self + "/hosts/${hostname}/configuration.nix")
     (self + "/users/nixos/${username}.nix")
