@@ -2,7 +2,7 @@
 REPO_HTTPS="https://github.com/wasabinator/nix-config.git"
 REPO_SSH="git@github.com:wasabinator/nix-config.git"
 DARWIN_HOSTS=("air" "mini")
-NIXOS_HOSTS=("fw13" "rb14" "steambox" "wsl")
+NIXOS_HOSTS=("fw13" "rb14" "simrig" "steambox" "wsl")
 
 HOST=$1
 
