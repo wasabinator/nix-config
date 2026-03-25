@@ -7,12 +7,13 @@
 , libserialport   # Arduino serial devices
 , libconfig       # config file parsing
 , libuv           # base event loop
-, argtable        # CLI argument parsing (argtable2 API)
+, argtable2       # CLI argument parsing (argtable2 API)
 , hidapi          # USB HID devices (Moza R5, etc.)
 , lua5_4          # Lua scripting for custom serial device effects
-, libxdg-basedir  # XDG config directory support
+, libxdg_basedir  # XDG config directory support
 , pipewire        # PulseAudio compat layer for haptic audio output
 , libxml2         # XML parsing (RevBurner tachometer config)
+, libpulseaudio   # Pulse audio
 }:
 
 stdenv.mkDerivation rec {
@@ -24,23 +25,32 @@ stdenv.mkDerivation rec {
     repo = "monocoque";
     rev = "10c172d3e1190a25361bed93f0b01c4d8540ebcf";
     # Run: nix-prefetch-url --unpack https://github.com/Spacefreak18/monocoque/archive/master.tar.gz
-    hash = "sha256-5FYyEXd7HytpQ+IIERYRqAUAl2EuuAeKvr8lQXl9ysI=";
+    hash = "sha256-BwCqMv5Exm9VYp4p2nlVQT4/+xVPWAbZ+1Cj4ceMuwk=";
     fetchSubmodules = true;
   };
 
+  cmakeFlags = [
+    "-DARGTABLE2_INCLUDE_DIR=${argtable2}/include"
+    "-DARGTABLE2_LIBRARY=${argtable2}/lib/libargtable2.so"
+    "-DCMAKE_C_FLAGS=-I${libxml2.dev}/include/libxml2"
+  ];
   nativeBuildInputs = [ cmake pkg-config ];
 
+  dontCheckForBrokenSymlinks = true; # ignore arduino sketch issues
+  
   buildInputs = [
     simapi
     libserialport
     libconfig
     libuv
-    argtable
+    argtable2
     hidapi
     lua5_4
-    libxdg-basedir
+    libxdg_basedir
     pipewire       # provides libpulse — used for haptic bass shaker audio output
     libxml2
+    libxml2.dev
+    libpulseaudio
   ];
 
   # Point CMake at our Nix-provided simapi rather than the git submodule.

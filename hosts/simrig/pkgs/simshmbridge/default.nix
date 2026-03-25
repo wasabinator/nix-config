@@ -1,20 +1,7 @@
 { lib
 , stdenv
 , fetchFromGitHub
-, cmake
-, pkg-config
-, simapi
-  # mingw-w64 cross compiler — needed to build the .exe bridge files that
-  # run inside game Proton prefixes to map shared memory across the boundary.
-, pkgsCross
 }:
-
-let
-  # We need both a native build (createsimshm, bridge Linux binaries)
-  # and a cross-compiled Windows build (simshmbridge.exe, acbridge.exe etc.)
-  # The .exe files are what actually run inside Proton prefixes.
-  mingw = pkgsCross.mingwW64.stdenv;
-in
 
 stdenv.mkDerivation rec {
   pname = "simshmbridge";
@@ -24,60 +11,36 @@ stdenv.mkDerivation rec {
     owner = "Spacefreak18";
     repo = "simshmbridge";
     rev = "740f64da83a3745c254778ac492f66bd7a972f9a";
-    # Run: nix-prefetch-url --unpack https://github.com/Spacefreak18/simshmbridge/archive/master.tar.gz
-    hash = "sha256-JpUEzwWLYoEaw2sdGICa9jf6Ut1BqhcBQz8XUk4BWDY=";
-    fetchSubmodules = true;
+    hash = "sha256-l1pz66U57Sxo9RpTHVT+h2RKcw6YnynXyZPB7iXeLm4=";
+    fetchSubmodules = false; # no submodules needed
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ ];
 
-  buildInputs = [ simapi ];
-
-  preConfigure = ''
-    substituteInPlace CMakeLists.txt \
-      --replace "submodules/simapi" "${simapi}"
+  # Only build the native Linux binaries, skip the .exe cross-compilation
+  # for now since mingw cross-compilation in Nix requires more setup.
+  # The .exe files can be built separately if needed.
+  buildPhase = ''
+    runHook preBuild
+    mkdir -p assets
+    gcc -DASSETTOCORSA -Wall -Os createsimshm.c -o assets/acshm
+    gcc -DASSETTOCORSA -Wall -Os bridge.c -o assets/achandle
+    runHook postBuild
   '';
 
   installPhase = ''
     runHook preInstall
-
-    mkdir -p $out/bin $out/share/simshmbridge
-
-    # Native Linux binaries
-    [ -f createsimshm ] && cp createsimshm $out/bin/
-    [ -f bridge ]       && cp bridge $out/bin/
-
-    # .exe bridge files — these are copied into Proton prefixes at game setup time.
-    # Usage: run the appropriate .exe inside the game's Proton prefix alongside
-    # simd (or acshm/createsimshm) to bridge shared memory across the Wine boundary.
-    #
-    # Per-game bridge files:
-    #   acbridge.exe      — Assetto Corsa (AppID 244210)
-    #   accbridge.exe     — Assetto Corsa Competizione
-    #   pcars2bridge.exe  — Project Cars 2 (and derivatives)
-    #
-    # See configuration.nix comments for Steam launch command integration.
-    find . -name "*.exe" -exec cp {} $out/share/simshmbridge/ \;
-
+    mkdir -p $out/bin
+    cp assets/acshm $out/bin/
+    cp assets/achandle $out/bin/
     runHook postInstall
   '';
 
   meta = with lib; {
     description = "Shared memory bridge for sim racing titles running under Wine/Proton";
-    longDescription = ''
-      simshmbridge creates Linux shared memory files for sim racing titles and
-      maps them into Wine/Proton prefixes, allowing native Linux tools like
-      monocoque to read telemetry from games that use Windows shared memory
-      APIs (CreateFileMapping/MapViewOfFile) rather than UDP.
-
-      The preferred modern alternative is simd (from the simapi repo), which
-      creates zeroed stubs of all supported memory files at boot and is
-      sim-process-aware. Use simshmbridge .exe files when a per-game bridge
-      is still needed (e.g. AC with an older Proton version).
-    '';
     homepage    = "https://github.com/Spacefreak18/simshmbridge";
     license     = licenses.gpl2Only;
     platforms   = platforms.linux;
-    maintainers = [];
   };
 }
+

@@ -3,6 +3,10 @@
 , fetchFromGitHub
 , cmake
 , pkg-config
+, argtable
+, libuv
+, libconfig
+, yder
 }:
 
 stdenv.mkDerivation {
@@ -14,10 +18,15 @@ stdenv.mkDerivation {
     repo = "simapi";
     rev = "561ff2a687efad7c781acd4400ef28c74d716ba3";
     # Run: nix-prefetch-url --unpack https://github.com/Spacefreak18/simapi/archive/master.tar.gz
-    hash = "sha256-KGJgomo0HCkv/WzuhJFesJZ9hfTL3lPKpA4W8scIaLQ=";
+    hash = "sha256-LRkm7s4R7ihFBWVC7w9odzLcOvgJQb4Ude15QWWnOy4=";
     fetchSubmodules = true;
   };
 
+  cmakeFlags = [
+    "-DARGTABLE3_INCLUDE_DIR=${argtable}/include"
+    "-DARGTABLE3_LIBRARY=${argtable}/lib/libargtable3.so"
+  ];
+  buildInputs = [ argtable libuv libconfig yder ];
   nativeBuildInputs = [ cmake pkg-config ];
 
   # simapi builds both a shared library (libsimapi.so) and the simd daemon.

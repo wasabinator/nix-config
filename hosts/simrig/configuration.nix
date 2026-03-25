@@ -187,9 +187,10 @@
 
   nixpkgs.overlays = [
     (final: prev: {
+      argtable2    = final.callPackage ./pkgs/argtable2 {};
       simapi      = final.callPackage ./pkgs/simapi {};
-      monocoque   = final.callPackage ./pkgs/monocoque { inherit (final) simapi; };
-      simshmbridge = final.callPackage ./pkgs/simshmbridge { inherit (final) simapi; };
+      monocoque   = final.callPackage ./pkgs/monocoque { inherit (final) simapi argtable2; };
+      simshmbridge = final.callPackage ./pkgs/simshmbridge {};
     })
   ];
 
@@ -211,7 +212,7 @@
       RestartSec    = "3s";
       # Run as the sim racing user so shared memory files have correct ownership
       User  = username;
-      Group = username;
+      Group = "users";
     };
   };
 
@@ -263,7 +264,7 @@
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     noto-fonts
-    noto-fonts-emoji
+    noto-fonts-color-emoji
   ];
 
   # ============================================================
@@ -282,7 +283,5 @@
     };
   };
 
-  nixpkgs.config.allowUnfree = true;
-
-  system.stateVersion = "25.05"; # TODO: set to your actual initial stateVersion
+  system.stateVersion = "25.11";
 }
