@@ -3,6 +3,7 @@
 , fetchFromGitHub
 , cmake
 , pkg-config
+, patchelf
 , argtable
 , libuv
 , libconfig
@@ -25,9 +26,13 @@ stdenv.mkDerivation {
   cmakeFlags = [
     "-DARGTABLE3_INCLUDE_DIR=${argtable}/include"
     "-DARGTABLE3_LIBRARY=${argtable}/lib/libargtable3.so"
+    "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
+    "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON"
+    "-DCMAKE_INSTALL_RPATH=${placeholder "out"}/lib:${placeholder "out"}/lib64"
   ];
+
   buildInputs = [ argtable libuv libconfig yder ];
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkg-config patchelf ];
 
   # simapi builds both a shared library (libsimapi.so) and the simd daemon.
   # We install all of them so downstream derivations (monocoque, simshmbridge)
@@ -40,11 +45,15 @@ stdenv.mkDerivation {
     # Headers
     cp -r $src/include/. $out/include/
 
-    # Shared library
-    [ -f libsimapi.so ] && cp libsimapi.so $out/lib/
+    # Library — copy and create versioned symlink to match soname
+    cp libsimapi.so $out/lib/libsimapi.so
+    ln -s $out/lib/libsimapi.so $out/lib/libsimapi.so.1
 
-    # simd daemon binary
-    [ -f simd ] && cp simd $out/bin/
+    # simd binary
+    [ -f simd/simd ] && cp simd/simd $out/bin/simd
+
+    # Set RPATH on simd so it finds libsimapi.so.1 at runtime
+    patchelf --set-rpath ${lib.makeLibraryPath [ libuv libconfig yder argtable ]}:$out/lib $out/bin/simd
 
     runHook postInstall
   '';
