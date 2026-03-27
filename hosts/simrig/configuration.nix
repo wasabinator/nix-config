@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, username, ... }:
+{ config, pkgs, pkgs-old, lib, inputs, username, ... }:
 
 {
   imports = [
@@ -16,6 +16,9 @@
 
   # Zen kernel — lower latency for sim racing, better responsiveness
   boot.kernelPackages = pkgs.linuxPackages_zen;
+
+  # Onboard audio
+  boot.kernelModules = [ "snd_hda_codec_realtek" ];
 
   boot.kernelParams = [
     "zswap.enabled=1"
@@ -69,6 +72,11 @@
     enable = true;
     enable32Bit = true; # Required for Steam / 32-bit Proton titles
   };
+
+  # ============================================================
+  # ollama cuda
+  # ============================================================
+  services.ollama = { enable = true; acceleration="cuda"; };
 
   # ============================================================
   # Hyprland
@@ -125,10 +133,30 @@
     enable = true;
     remotePlay.openFirewall = false;
     dedicatedServer.openFirewall = false;
+    protontricks.enable = true;
     extraCompatPackages = [ pkgs.proton-ge-bin ];
+    package = pkgs.steam.override {
+      extraPkgs = pkgs: with pkgs; [
+        # 64-bit
+        freetype
+        fontconfig
+        
+        # 32-bit (critical for Wine)
+        pkgsi686Linux.freetype
+        pkgsi686Linux.fontconfig
+      ];
+    };
   };
 
   programs.gamemode.enable = true;
+
+  system.activationScripts.protonGESymlink = {
+    text = ''
+      mkdir -p /home/amiceli/.steam/root/compatibilitytools.d
+      ln -sfn ${pkgs.proton-ge-bin.steamcompattool} \
+        /home/amiceli/.steam/root/compatibilitytools.d/GE-Proton10-30
+    '';
+  };
 
   programs.firefox.enable = true;
 
@@ -164,6 +192,7 @@
     hyprpaper
     wl-clipboard
     xdg-utils
+    networkmanagerapplet
 
     # Audio control — manage main audio vs USB haptic audio card
     pavucontrol
@@ -179,6 +208,9 @@
     git
     wget
     curl
+
+    # Proton
+    pkgs-old.protontricks
   ];
 
   # ============================================================
@@ -250,6 +282,10 @@
     SUBSYSTEM=="hidraw", ATTRS{idVendor}=="346e", MODE="0664", GROUP="input"
     SUBSYSTEM=="usb",    ATTRS{idVendor}=="346e", MODE="0664", GROUP="input"
     SUBSYSTEM=="input",  ATTRS{idVendor}=="346e", MODE="0664", GROUP="input"
+
+    # Arduino Uno (wind motor) — stable symlink at /dev/arduino-wind
+    SUBSYSTEM=="tty", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0043", \
+    ATTRS{serial}=="9503331303135191D0E0", SYMLINK+="arduino-wind"
   '';
 
   # ============================================================
@@ -263,11 +299,14 @@
   # Fonts
   # ============================================================
 
-  fonts.packages = with pkgs; [
-    nerd-fonts.jetbrains-mono
-    noto-fonts
-    noto-fonts-color-emoji
-  ];
+  fonts = {
+    fontconfig.enable = true;
+    packages = with pkgs; [
+      nerd-fonts.jetbrains-mono
+      noto-fonts
+      noto-fonts-color-emoji
+    ];
+  };
 
   # ============================================================
   # Nix settings

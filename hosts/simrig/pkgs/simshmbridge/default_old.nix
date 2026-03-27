@@ -1,12 +1,8 @@
 { lib
 , stdenv
 , fetchFromGitHub
-, pkgsCross
+, pkgs
 }:
-
-let
-  mcfgthreads = pkgsCross.mingwW64.windows.mcfgthreads;
-in
 
 stdenv.mkDerivation rec {
   pname = "simshmbridge";
@@ -20,42 +16,35 @@ stdenv.mkDerivation rec {
     fetchSubmodules = false; # no submodules needed
   };
 
+  nativeBuildInputs = [ pkgs.pkgsCross.mingwW64.gcc ];
+
+  # Only build the native Linux binaries, skip the .exe cross-compilation
+  # for now since mingw cross-compilation in Nix requires more setup.
+  # The .exe files can be built separately if needed.
   buildPhase = ''
     runHook preBuild
     mkdir -p assets
+    gcc -DASSETTOCORSA -Wall -Os createsimshm.c -o assets/acshm
+    gcc -DASSETTOCORSA -Wall -Os bridge.c -o assets/achandle
 
-    ${pkgsCross.mingwW64.stdenv.cc}/bin/x86_64-w64-mingw32-gcc simshmbridge.c \
-      -DASSETTOCORSA -DHELPERPROCESSFIRST \
-      -mconsole -Os \
-      -L${mcfgthreads}/lib \
-      -o assets/acbridge.exe
-
-    ${pkgsCross.mingwW64.stdenv.cc}/bin/x86_64-w64-mingw32-gcc simshmbridge.c \
-      -DASSETTOCORSA -DHELPERPROCESSSECOND \
-      -mconsole -Os \
-      -L${mcfgthreads}/lib \
-      -o assets/achandle.exe
-
-    gcc createsimshm.c -DASSETTOCORSA -Os -o assets/acshm
-    gcc bridge.c -DASSETTOCORSA -Os -o assets/achandle
-
+    # Cross-compile acbridge.exe for Windows from simshmbridge.c
+    x86_64-w64-mingw32-gcc -DASSETTOCORSA -Wall -Os simshmbridge.c -DHELPERPROCESSFIRST -mconsole -o acbridge.exe
     runHook postBuild
   '';
 
   installPhase = ''
     runHook preInstall
-    mkdir -p $out/bin $out/share/simshmbridge
+    mkdir -p $out/bin
     cp assets/acshm $out/bin/
     cp assets/achandle $out/bin/
-    cp assets/acbridge.exe $out/share/simshmbridge/
-    cp assets/achandle.exe $out/share/simshmbridge/
+    cp acbridge.exe $out/bin/
     runHook postInstall
   '';
 
   meta = with lib; {
     description = "Shared memory bridge for sim racing titles running under Wine/Proton";
     homepage    = "https://github.com/Spacefreak18/simshmbridge";
-    license     = licenses.gpl3Only;
+    license     = licenses.gpl2Only;
     platforms   = platforms.linux;
   };
 }
