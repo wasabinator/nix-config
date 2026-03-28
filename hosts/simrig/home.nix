@@ -9,14 +9,19 @@
     winetricks
   ];
 
-  home.file.".local/bin/wine" = {
-    executable = true;
-    text = ''
-      #!/bin/sh
-      exec /run/current-system/sw/bin/steam-run \
-        /home/amiceli/.steam/root/compatibilitytools.d/GE-Proton10-30/files/bin/wine "$@"
-    '';
-  };
+home.file.".local/bin/simd-wine-wrap.sh" = {
+  executable = true;
+  text = ''
+    #!/bin/sh
+    export HOME=/home/amiceli
+    export XDG_CACHE_HOME=/home/amiceli/.cache
+    export WINEDEBUG=-all
+    export WINEDLLOVERRIDES="wineusb.sys="
+    export WINEPREFIX=/home/amiceli/.local/share/Steam/steamapps/compatdata/244210/pfx
+    # Use NixOS-patched wine instead of GE-Proton's wine
+    exec ${pkgs.wineWowPackages.staging}/bin/wine "$2" >> /tmp/simd-wrap.log 2>&1
+  '';
+};
 
   # ============================================================
   # Hyprland config
@@ -139,18 +144,17 @@
 
   systemd.user.services.simd = {
     Unit = {
-      Description = "simapi shared memory daemon";
+      Description = "SimAPI Daemon - Racing Simulator Telemetry Service";
+      Documentation = [ "https://github.com/Spacefreak18/simapi" ];
       After = [ "default.target" ];
     };
     Service = {
-      ExecStart = "${pkgs.simapi}/bin/simd -vv";
+      Type = "simple";
+      ExecStart = "${pkgs.simapi}/bin/simd --nodaemon -vv";
       Restart = "on-failure";
-      RestartSec = "3s";
-      Environment = [
-        "PATH=/home/amiceli/.local/bin:/run/current-system/sw/bin:/usr/bin:/bin"
-        "STEAM_COMPAT_CLIENT_INSTALL_PATH=%h/.local/share/Steam"
-        "STEAM_COMPAT_TOOL_PATHS=/home/amiceli/.steam/root/compatibilitytools.d/GE-Proton10-30:%h/.local/share/Steam/steamapps/common/SteamLinuxRuntime_sniper"
-      ];
+      RestartSec = "5";
+      StandardOutput = "journal";
+      StandardError = "journal";
     };
     Install = {
       WantedBy = [ "default.target" ];
