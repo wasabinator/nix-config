@@ -9,6 +9,15 @@
     winetricks
   ];
 
+  home.file.".local/bin/wine" = {
+    executable = true;
+    text = ''
+      #!/bin/sh
+      exec /run/current-system/sw/bin/steam-run \
+        /home/amiceli/.steam/root/compatibilitytools.d/GE-Proton10-30/files/bin/wine "$@"
+    '';
+  };
+
   # ============================================================
   # Hyprland config
   # ============================================================
@@ -121,6 +130,38 @@
   };
 
   # ============================================================
+  # simd — shared memory daemon (systemd system service)
+  # ============================================================
+  # simd must start before monocoque and before any games launch.
+  # It creates zeroed shared memory stubs for all supported sims so that
+  # monocoque can open them immediately without waiting for a game to start.
+  # It also detects when a supported sim process starts/stops.
+
+  systemd.user.services.simd = {
+    Unit = {
+      Description = "simapi shared memory daemon";
+      After = [ "default.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.simapi}/bin/simd -vv";
+      Restart = "on-failure";
+      RestartSec = "3s";
+      Environment = [
+        "PATH=/home/amiceli/.local/bin:/run/current-system/sw/bin:/usr/bin:/bin"
+        "STEAM_COMPAT_CLIENT_INSTALL_PATH=%h/.local/share/Steam"
+        "STEAM_COMPAT_TOOL_PATHS=/home/amiceli/.steam/root/compatibilitytools.d/GE-Proton10-30:%h/.local/share/Steam/steamapps/common/SteamLinuxRuntime_sniper"
+      ];
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
+
+  home.file.".config/simd/simd.config" = {
+    source = "${pkgs.simapi.src}/simd/conf/simd.config";
+  };
+
+  # ============================================================
   # monocoque — user service
   # ============================================================
   # monocoque reads telemetry from simd's shared memory and drives:
@@ -137,26 +178,36 @@
   systemd.user.services.monocoque = {
     Unit = {
       Description = "Monocoque sim racing device manager";
-      # Wait for simd (system service) and PipeWire to be ready
-      After = [ "pipewire.service" "simd.service" ];
+      After = [ "simd.service" ];
+      Requires = [ "simd.service" ];
     };
     Service = {
       ExecStartPre = "${pkgs.coreutils}/bin/sleep 2";
-      ExecStart = "${pkgs.util-linux}/bin/script -q -c '${pkgs.monocoque}/bin/monocoque -v play' /dev/null";
+      ExecStart = "${pkgs.util-linux}/bin/script -q -c '${pkgs.monocoque}/bin/monocoque -vv play' /dev/null";
       Restart = "on-failure";
       RestartSec = "3s";
+      StandardInput = "null";
+      StandardOutput = "journal";
+      StandardError = "journal";
     };
     Install = {
-      WantedBy = [ "default.target" ];
+      WantedBy = [ "graphical-session.target" ];
     };
   };
 
   home.file.".config/monocoque/monocoque.config" = {
-text = ''
-  configs = (
-      {
+    text = ''
+      configs = (
+        {
           sim = "default";
           devices = (
+          {
+              device  = "Serial";
+              type    = "SimWind";
+              config  = "None";
+              baud    = 115200;
+              devpath = "/dev/arduino-wind";
+          },
           {
               device       = "Sound";
               effect       = "Engine";
@@ -171,9 +222,9 @@ text = ''
               frequencyMax = 37;
               noise        = 10;
           });
-      }
-  );
-'';
+        }
+      );
+    '';
   };
 
   # ============================================================
@@ -250,6 +301,8 @@ text = ''
   home.sessionVariables = {
     XDG_SESSION_TYPE    = "wayland";
     XDG_CURRENT_DESKTOP = "Hyprland";
+    SIMD_BRIDGE_EXE     = "/home/${config.home.username}/.local/share/simshmbridge/acbridge.exe";
+    STEAM_COMPAT_CLIENT_INSTALL_PATH = "/home/${config.home.username}/.local/share/Steam";
   };
 
   # ============================================================
@@ -275,16 +328,6 @@ home.file.".local/bin/launch-ac.sh" = {
     #!/bin/sh
     AC_APPID=244210
     PROTON_PREFIX="$HOME/.local/share/Steam/steamapps/compatdata/$AC_APPID/pfx"
-    ACBRIDGE="$HOME/.local/share/simshmbridge/acbridge.exe"
-    COMPAT_TOOLS="$HOME/.steam/root/compatibilitytools.d"
-
-    # Find latest GE-Proton installation
-    GE_PROTON=$(ls "$COMPAT_TOOLS" | grep "GE-Proton" | sort -V | tail -1)
-    if [ -z "$GE_PROTON" ]; then
-      echo "**** ERROR: No GE-Proton installation found in $COMPAT_TOOLS"
-      exit 1
-    fi
-    echo "**** Using $GE_PROTON"
 
     # Enable AC shared memory if not already set
     PYTHON_INI="$PROTON_PREFIX/drive_c/users/steamuser/Documents/Assetto Corsa/cfg/python.ini"
@@ -293,29 +336,7 @@ home.file.".local/bin/launch-ac.sh" = {
     fi
 
     # Launch AC via Steam
-    steam steam://rungameid/$AC_APPID > /dev/null 2>&1 &
-
-    # Wait for AC process to appear then launch acbridge.exe
-    echo "**** Waiting for AC to start..."
-    ATTEMPTS=0
-while [ $ATTEMPTS -lt 30 ]; do
-  if pgrep -f "acs.exe" > /dev/null 2>&1; then
-    echo "**** AC detected, launching acbridge.exe..."
-    WINEFSYNC=1 \
-    WINEPREFIX="$PROTON_PREFIX" \
-    STEAM_COMPAT_DATA_PATH="$HOME/.local/share/Steam/steamapps/compatdata/$AC_APPID" \
-    STEAM_COMPAT_CLIENT_INSTALL_PATH="$HOME/.local/share/Steam" \
-    ${pkgs.steam-run}/bin/steam-run \
-      ${pkgs.python3}/bin/python3 \
-        "$COMPAT_TOOLS/$GE_PROTON/proton" run \
-        "$ACBRIDGE" > /dev/null 2>&1 &
-    echo "**** acbridge.exe launched"
-    exit 0
-  fi
-  ATTEMPTS=$((ATTEMPTS + 1))
-  sleep 2
-done
-    echo "**** AC process not detected after 60 seconds"
+    steam steam://rungameid/$AC_APPID &
   '';
 };
 

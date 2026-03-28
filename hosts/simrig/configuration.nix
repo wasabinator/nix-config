@@ -26,6 +26,8 @@
     "zswap.max_pool_percent=20"
   ];
 
+  boot.tmp.cleanOnBoot = true;
+
   # ============================================================
   # Networking
   # ============================================================
@@ -211,6 +213,8 @@
 
     # Proton
     pkgs-old.protontricks
+
+    libnotify  # provides notify-send for simd
   ];
 
   # ============================================================
@@ -229,28 +233,6 @@
   ];
 
   # ============================================================
-  # simd — shared memory daemon (systemd system service)
-  # ============================================================
-  # simd must start before monocoque and before any games launch.
-  # It creates zeroed shared memory stubs for all supported sims so that
-  # monocoque can open them immediately without waiting for a game to start.
-  # It also detects when a supported sim process starts/stops.
-
-  systemd.services.simd = {
-    description = "simapi shared memory daemon";
-    wantedBy    = [ "multi-user.target" ];
-    after       = [ "network.target" ];
-    serviceConfig = {
-      ExecStart     = "${pkgs.simapi}/bin/simd";
-      Restart       = "on-failure";
-      RestartSec    = "3s";
-      # Run as the sim racing user so shared memory files have correct ownership
-      User  = username;
-      Group = "users";
-    };
-  };
-
-  # ============================================================
   # USB Device Access & udev Rules
   # ============================================================
 
@@ -264,6 +246,7 @@
       "input"     # Moza devices + general input
       "uinput"    # Virtual input device creation
       "video"
+      "users"
     ];
   };
 

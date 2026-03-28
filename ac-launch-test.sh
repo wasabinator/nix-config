@@ -1,36 +1,26 @@
 #!/bin/sh
-APP_ID=244210
+AC_APPID=244210
+PROTON_PREFIX_DIR="$HOME/.local/share/Steam/steamapps/compatdata/$AC_APPID"
 
-echo "--- Running protontricks to install dotnet48..."
-echo "--- This may take a while and open several installer windows."
-echo
-
-# Support both common prefix locations
-if [ -d "/home/$USER/.local/share/Steam/steamapps/compatdata/$APP_ID/pfx" ]; then
-  WINEPREFIX="/home/$USER/.local/share/Steam/steamapps/compatdata/$APP_ID/pfx"
-elif [ -d "/home/$USER/.steam/steam/steamapps/compatdata/$APP_ID/pfx" ]; then
-  WINEPREFIX="/home/$USER/.steam/steam/steamapps/compatdata/$APP_ID/pfx"
-else
-  echo "Error: Wine prefix for app $APP_ID not found."
-  echo "Make sure you've run the game at least once through Steam."
-  exit 1
-fi
-
-# Cleanup stale Wine processes
+# Cleanup stale Wine processes (user's original script had this, keeping it)
 echo "Cleaning up stale Wine processes..."
 pkill -9 wineserver 2>/dev/null || true
 rm -f /dev/shm/wine-*-fsync 2>/dev/null || true
 sleep 1
 
-export WINEPREFIX
+export WINEPREFIX="$PROTON_PREFIX_DIR/pfx"
 export WINEARCH=win64
+# Explicitly add Proton's bin directory to PATH for winetricks to find wineserver
+export PATH="/home/amiceli/.cache/protontricks/proton/GE-Proton/bin:$PATH"
 
-echo "Running winetricks..."
-steam-run winetricks --force -q dotnet48
-
-#protontricks --verbose $AC_APPID dotnet48
+echo "--- Now running winetricks to install corefonts..."
+echo "--- This may take a while and open several installer windows."
+echo
+steam-run winetricks --force -q corefonts
 
 echo
-echo "---"
-echo "Script finished."
-echo "If the command succeeded, the '.NET 4.8 required' dialog should now be gone."
+echo "--- About to launch acbridge.exe"
+
+protontricks -c 'wine ~/.local/share/simshmbridge/acbridge.exe' 244210
+
+echo "--- Finished"
