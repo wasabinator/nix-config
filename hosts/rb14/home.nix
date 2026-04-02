@@ -25,6 +25,9 @@ in
     (self + "/modules/nixos/home/laptop.nix")
   ];
 
+  services.ollama.enable = true;
+  services.ollama.acceleration = "cuda";
+
   home.packages = with pkgs; [
     android-studio
     bambu-studio

@@ -47,7 +47,7 @@ imports = [
   hardware.enableRedistributableFirmware = true;
 
   hardware.nvidia = {
-    open = false;
+    open = true;
     nvidiaSettings = true;
     modesetting.enable = true;
     powerManagement.enable = true;
@@ -73,7 +73,7 @@ imports = [
 
   environment.sessionVariables = {
     ELECTRON_EXTRA_LAUNCH_ARGS = "--disable-gpu";
-    __EGL_VENDOR_LIBRARY_FILENAMES = "/run/opengl-driver/share/glvnd/egl_vendor.d/50_mesa.json";
+    #__EGL_VENDOR_LIBRARY_FILENAMES = "/run/opengl-driver/share/glvnd/egl_vendor.d/50_mesa.json";
   };
 
   programs.steam = {
