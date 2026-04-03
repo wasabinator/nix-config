@@ -14,8 +14,8 @@ The root cause is a bug in the NVIDIA open kernel driver
 the dGPU is already in D3cold. Battery ACPI events from the Embedded Controller
 (EC) trigger this handler, waking the GPU unnecessarily.
 
-This is confirmed to affect the open kernel modules only - the proprietary
-driver does not have this bug.
+This is reported to affect the open kernel modules only, but I personally saw the same
+behaviour with the the proprietary driver.
 
 ## Confirming the Issue
 
