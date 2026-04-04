@@ -11,7 +11,7 @@ imports = [
   boot.loader.systemd-boot.enable = true;
   boot.loader.systemd-boot.configurationLimit = 10;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_6_18; # linuxPackages_latest won't work with latest nvidia driver (ref: https://github.com/nixos/nixpkgs/issues/489947)
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelParams = [ "mem_sleep_default=deep" ];
   boot.extraModprobeConfig = ''
     options nvidia NVreg_DynamicPowerManagement=2
