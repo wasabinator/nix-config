@@ -14,17 +14,18 @@
  *     Checksum         0x3E
  *     OEM ID           "ALASKA"
  *     OEM Table ID     "A M I "
- *     OEM Revision     0x01072009 (17244169)
+ *     OEM Revision     0x0107200A (17244170)
  *     Compiler ID      "INTL"
  *     Compiler Version 0x20200717 (538969879)
  */
-DefinitionBlock ("", "DSDT", 2, "ALASKA", "A M I ", 0x01072010)
+DefinitionBlock ("", "DSDT", 2, "ALASKA", "A M I ", 0x0107200A)
 {
     External (_SB_.ALIB, MethodObj)    // 2 Arguments
     External (_SB_.APTS, MethodObj)    // 1 Arguments
     External (_SB_.AWAK, MethodObj)    // 1 Arguments
     External (_SB_.NPCF, UnknownObj)
     External (_SB_.NPCF.ATPP, UnknownObj)
+    External (_SB_.NPCF.ACBT, UnknownObj)
     External (_SB_.NPCF.CTGP, UnknownObj)
     External (_SB_.NPCF.DCBT, UnknownObj)
     External (_SB_.NPCF.DTPP, UnknownObj)
@@ -6741,37 +6742,13 @@ DefinitionBlock ("", "DSDT", 2, "ALASKA", "A M I ", 0x01072010)
                     ^^^^NPCF.WM2E = One
                 }
 
-                If ((TMMD == One))
+                If (CondRefOf (\_SB.NPCF.ACBT))
                 {
-                    If (CondRefOf (\_SB.NPCF.CTGP))
-                    {
-                        ^^^^NPCF.CTGP = One
-                    }
+                    ^^^^NPCF.ACBT = 0x64
                 }
-                ElseIf ((TMMD == 0x04))
-                {
-                    If ((OMID == 0x20141A58))
-                    {
-                        ^^^^NPCF.WM2E = Zero
-                    }
-
-                    If (CondRefOf (\_SB.NPCF.CTGP))
-                    {
-                        ^^^^NPCF.CTGP = Zero
-                        Local0 = (PSTA & 0x08)
-                        If (Local0)
-                        {
-                            ^^^^NPCF.CTGP = One
-                        }
-                    }
-                }
-                ElseIf (CondRefOf (\_SB.NPCF.CTGP))
-                {
-                    ^^^^NPCF.CTGP = Zero
-                }
-
                 If (CondRefOf (\_SB.NPCF.CTGP))
                 {
+                    ^^^^NPCF.CTGP = One
                 }
             }
 
@@ -6783,17 +6760,10 @@ DefinitionBlock ("", "DSDT", 2, "ALASKA", "A M I ", 0x01072010)
             Method (_Q33, 0, NotSerialized)  // _Qxx: EC Query, xx=0x00-0xFF
             {
                 DBG8 = 0x33
-                Local0 = (PSTA & 0x08)
                 If (CondRefOf (\_SB.NPCF))
                 {
-                    If (Local0)
-                    {
-                        ^^^^NPCF.CTGP = One
-                    }
-                    Else
-                    {
-                        ^^^^NPCF.CTGP = Zero
-                    }
+                    ^^^^NPCF.ACBT = 0x64
+                    ^^^^NPCF.CTGP = One
 
                 }
             }
@@ -6806,11 +6776,7 @@ DefinitionBlock ("", "DSDT", 2, "ALASKA", "A M I ", 0x01072010)
                 {
                     If ((RPL1 != Zero))
                     {
-                        Local0 = (PSTA & One)
-                        If (Local0)
-                        {
-                            ^^^^NPCF.ATPP = (RPL1 * 0x08)
-                        }
+                        ^^^^NPCF.ATPP = (RPL1 * 0x08)
                     }
 
                 }
@@ -7819,4 +7785,3 @@ DefinitionBlock ("", "DSDT", 2, "ALASKA", "A M I ", 0x01072010)
         }
     }
 }
-

@@ -15,7 +15,7 @@ the dGPU is already in D3cold. Battery ACPI events from the Embedded Controller
 (EC) trigger this handler, waking the GPU unnecessarily.
 
 This is reported to affect the open kernel modules only, but I personally saw the same
-behaviour with the the proprietary driver.
+behaviour with the proprietary driver.
 
 ## Confirming the Issue
 
@@ -116,6 +116,98 @@ And confirm the GPU stays suspended:
 ```bash
 watch -n1 'cat /sys/bus/pci/devices/0000:01:00.0/power/runtime_status'
 ```
+
+---
+
+## TGP Patch (Experimental — Parked on Branch)
+
+> **Status**: Implemented and compiling, but currently inert. Parked on a
+> separate branch pending NVPCF support in the open kernel driver. The D3cold
+> patch above is unaffected and remains active on `main`.
+
+### Background
+
+The RTX 3070 Mobile in the Razer Blade 14 has a spec TGP of 100W, but under
+Linux with the open kernel driver it is capped at ~34W on battery and ~40W on
+AC. `nvidia-smi` reports the driver is aware of an 80W default limit and 100W
+maximum, but the current power limit shows as `[N/A]`, meaning no TGP
+negotiation is taking place.
+
+### Investigation
+
+The normal TGP negotiation path on Linux is via `nvidia-powerd`, which
+communicates with the EC through the NVPCF ACPI interface. This requires the
+`nvidia-cap` kernel module, which provides `/dev/nvidia-caps/`. This module is
+**not present in the open kernel driver** — only in the proprietary driver.
+Consequently `nvidia-powerd` exits immediately at startup and TGP negotiation
+never occurs.
+
+Confirmed by:
+
+```bash
+ls /dev/nvidia-caps/   # returns: no nvidia-caps
+modinfo nvidia_cap     # returns: not found
+```
+
+And:
+
+```bash
+# nv_acpi_nvpcf_notify is not traceable in the open driver
+nix-shell -p bpftrace --run "sudo bpftrace -e 'kretprobe:nv_acpi_nvpcf_notify { printf(\"fired\n\"); }'"
+# WARNING: nv_acpi_nvpcf_notify is not traceable
+```
+
+### DSDT Analysis
+
+Despite the open driver not listening for NVPCF notifications, the DSDT and
+driver SSDT contain the full TGP negotiation structure. Key fields on the `NPCF`
+device (defined in the nvidia-provided SSDT):
+
+- `CTGP` — boolean flag; when `One`, enables boost TGP (`TGPA = ACBT`)
+- `ACBT` — AC boost TGP value in watts (default `0x50` = 80W)
+- `DCBT` — DC (battery) boost TGP
+- `ATPP` — average TGP, set from EC register `RPL1 * 0x08`
+- `DTPP` — DC average TGP
+- `TGPA` / `TGPD` — final AC/DC TGP values communicated to the GPU
+
+The EC actively gates TGP via three query methods:
+
+- `_Q30` — sets `CTGP` based on thermal/performance mode (`TMMD`)
+- `_Q33` — sets `CTGP` based on AC/DC state (`PSTA & 0x08`)
+- `_Q34` — sets `ATPP` from `RPL1 * 0x08`, gated on AC power
+
+### The Patch
+
+The branch patches `dsdt.dsl` to:
+
+1. Force `CTGP = One` unconditionally in `_Q30` and `_Q33`
+2. Set `ACBT = 0x64` (100W) before enabling `CTGP`, overriding the SSDT
+   default of 80W to match the hardware's rated maximum
+3. Remove the AC-only gate in `_Q34` so `ATPP` is always set from `RPL1`
+
+Additionally, `External (_SB_.NPCF.ACBT, UnknownObj)` is declared at the top
+of the DSL since `ACBT` is an SSDT-owned field not previously referenced in the
+DSDT.
+
+### Why It Is Currently Inert
+
+Even with `CTGP` and `ACBT` being set correctly by the DSDT, the open kernel
+driver does not implement the NVPCF notification handler
+(`nv_acpi_nvpcf_notify`) that would read these values and apply them as a power
+budget to the GPU. The values are written to the NPCF device but never consumed.
+
+### When This May Become Useful
+
+If NVIDIA implements NVPCF support in the open kernel modules (analogous to the
+`nvidia-cap` / `nvidia-powerd` path in the proprietary driver), the DSDT patch
+should enable full 100W TGP negotiation without any further changes. The patch
+is parked on the branch rather than deleted so it can be rebased and tested when
+that support lands.
+
+Watch: [open-gpu-kernel-modules](https://github.com/NVIDIA/open-gpu-kernel-modules/issues)
+for NVPCF-related issues or PRs.
+
+---
 
 ## References
 
