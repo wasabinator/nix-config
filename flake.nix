@@ -16,10 +16,14 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    home-manager-unstable = {
+      url = "github:nix-community/home-manager/master";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
   };
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixos-hardware, agenix, nix-darwin, nixos-wsl, home-manager, nix-homebrew, nix-flatpak, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixos-hardware, agenix, nix-darwin, nixos-wsl, home-manager, home-manager-unstable, nix-homebrew, nix-flatpak, ... }@inputs:
     let
       username = "amiceli";
       mkDarwinSystem = import ./lib/mkDarwinSystem.nix {
@@ -30,8 +34,29 @@
       };
     in {
       nixosConfigurations = {
-        fw13     = mkNixosSystem { hostname = "fw13";     inherit username; };
-        rb14     = mkNixosSystem { hostname = "rb14";     inherit username; };
+        fw13 = mkNixosSystem { 
+          hostname = "fw13";
+          inherit username;
+        };
+        rb14 = mkNixosSystem { 
+          hostname = "rb14";
+          inherit username;
+          pkgsSrc = nixpkgs-unstable;
+          homeSrc = home-manager-unstable;
+          overlays = [
+            (final: prev: {
+             ollama-cuda = prev.ollama-cuda.overrideAttrs (old: rec {
+               version = "0.20.0";
+               src = prev.fetchFromGitHub {
+                 owner = "ollama";
+                 repo = "ollama";
+                 rev = "v${version}";
+                 hash = "sha256-QQKPXdXlsT+uMGGIyqkVZqk6OTa7VHrwDVmgDdgdKOY=";
+                };
+              });
+            })
+          ];
+        };
         simrig   = mkNixosSystem { hostname = "simrig";   inherit username; };
         steambox = mkNixosSystem { hostname = "steambox"; inherit username; };
         wsl      = mkNixosSystem { hostname = "wsl";      inherit username; };

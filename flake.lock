@@ -99,6 +99,27 @@
         "type": "github"
       }
     },
+    "home-manager-unstable": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1775359721,
+        "narHash": "sha256-MlAzzRQSNb0dikVweLme9MQd0I0c/sGPczYuG2hpjJ4=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "8ec54491cd17a5b7a019146f5f90a5cec379739a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "master",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
     "home-manager_2": {
       "inputs": {
         "nixpkgs": [
@@ -245,11 +266,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1775273189,
-        "narHash": "sha256-+S504k9CMbjFW8/pJKG/yQPlRhyrVUJl5GM/LstC4cc=",
+        "lastModified": 1775353557,
+        "narHash": "sha256-/4ZCXK+uPub1W28KXW45khY/iSJjDHOTSA9vWaLCWoU=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "acb8e6fdc9c94ebb0ed30b47c3e94461c67cd65b",
+        "rev": "36643231654bc49df94fcaceb65827b1d9080d75",
         "type": "github"
       },
       "original": {
@@ -263,6 +284,7 @@
       "inputs": {
         "agenix": "agenix",
         "home-manager": "home-manager_2",
+        "home-manager-unstable": "home-manager-unstable",
         "nix-darwin": "nix-darwin",
         "nix-flatpak": "nix-flatpak",
         "nix-homebrew": "nix-homebrew",

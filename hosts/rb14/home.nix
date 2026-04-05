@@ -25,12 +25,16 @@ in
     (self + "/modules/nixos/home/laptop.nix")
   ];
 
-  services.ollama.enable = true;
-  services.ollama.acceleration = "cuda";
+  services.ollama = {
+    enable = true;
+    acceleration = "cuda";
+    package = pkgs.ollama-cuda;
+  };
 
   home.packages = with pkgs; [
     android-studio
     bambu-studio
+    celluloid
     gthumb
     plex-desktop
     plexamp
@@ -42,7 +46,6 @@ in
     steam-run
     synology-drive-client
     vivaldi
-    celluloid
   ];
 
   dconf.settings."org/gnome/shell" = {

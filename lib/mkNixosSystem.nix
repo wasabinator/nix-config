@@ -1,22 +1,22 @@
 { nixpkgs, nixpkgs-unstable, home-manager, agenix, nix-flatpak, inputs, self }:
-{ hostname, username, system ? "x86_64-linux", extraModules ? [], homeModules ? [] }:
-nixpkgs.lib.nixosSystem {
-  pkgs = import nixpkgs {
+{ hostname, username, system ? "x86_64-linux", pkgsSrc ? nixpkgs, homeSrc ? home-manager, overlays ? [], extraModules ? [], homeModules ? [] }:
+let
+  lib = pkgsSrc.lib;
+in
+lib.nixosSystem {
+  pkgs = import pkgsSrc {
     inherit system;
     config.allowUnfree = true;
+    inherit overlays;
   };
   specialArgs = {
     inherit inputs hostname username self;
-    pkgs-unstable = import nixpkgs-unstable {
-      inherit system;
-      config.allowUnfree = true;
-    };
   };
   modules = [
     (self + "/hosts/${hostname}/configuration.nix")
     (self + "/users/nixos/${username}.nix")
     { nix.settings.experimental-features = [ "nix-command" "flakes" ]; }
-    home-manager.nixosModules.home-manager {
+    homeSrc.nixosModules.home-manager {
       home-manager.useGlobalPkgs = true;
       home-manager.extraSpecialArgs = { inherit inputs hostname username self; };
       home-manager.users.${username} = {
