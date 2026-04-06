@@ -10,6 +10,7 @@ in {
     inherit pkgs;
     modules = [
       "${inputs.self}/config/rb14/hardware-configuration.nix"
+      inputs.nix-flatpak.nixosModules.nix-flatpak
       inputs.home-manager-unstable.nixosModules.home-manager
       {
         home-manager.useGlobalPkgs = false;
@@ -19,8 +20,10 @@ in {
       config.flake.nixosModules.agenix
       config.flake.nixosModules.user
       config.flake.nixosModules.rb14-user-secrets
+      config.flake.nixosModules.locale
       config.flake.nixosModules.shell
       config.flake.nixosModules.desktop
+      config.flake.nixosModules.laptop
       config.flake.nixosModules.gaming
       ({ pkgs, lib, ... }: {
         boot.loader.systemd-boot.enable = true;

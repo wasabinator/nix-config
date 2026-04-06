@@ -1,36 +1,71 @@
 { config, inputs, ... }:
 let
   homeConfig = { pkgs, ... }: {
-      home.packages = with pkgs; [
-        fastfetch
-      ];
+    home.packages = with pkgs; [
+      fastfetch
+    ];
 
-      home.sessionVariables = {
-        EDITOR = "nano";
-      };
+    home.sessionVariables = {
+      EDITOR = "nano";
+    };
 
-      programs.starship = {
-        enable = true;
-        settings = {
-          battery = {
-            format = "[$symbol$percentage]($style) ";
-            disabled = false;
-            display = [
-              {
-                style = "red bold";
-                threshold = 30;
-              }
-            ];
-          };
+    programs.direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+    };
+
+    programs.starship = {
+      enable = true;
+      settings = {
+        battery = {
+          format = "[$symbol$percentage]($style) ";
+          disabled = false;
+          display = [
+            {
+              style = "red bold";
+              threshold = 30;
+            }
+          ];
         };
       };
+    };
   };
 in {
-  flake.nixosModules.shell = {
-    home = homeConfig;
+  flake.nixosModules.shell = { pkgs, ... }: {
+    home = (homeConfig pkgs) // {
+      home.sessionVariables = {
+        LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib";
+      };
+      
+      programs.bash = {
+        enable = true;
+        initExtra = ''
+          if [ -f /etc/bashrc ]; then
+            . /etc/bashrc
+          fi
+          export EDITOR="nano"
+          eval "$(starship init bash)"
+          fastfetch
+        '';
+      };
+      
+      programs.ghostty = {
+        enable = true;
+        settings = {
+          font-family = "Jetbrains Mono";
+          font-size = 12;
+          keybind = [
+            "ctrl+h=goto_split:left"
+            "ctrl+l=goto_split:right"
+          ];
+          window-height = 45;
+          window-width = 160;
+        };
+      };
+    };
   };
 
-  flake.darwinModules.shell = {
-    home = homeConfig;
+  flake.darwinModules.shell = { pkgs, ... }: {
+    home = homeConfig pkgs;
   };
 }

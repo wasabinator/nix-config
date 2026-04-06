@@ -47,10 +47,10 @@ do_rebuild() {
       sudo -H nix run nix-darwin \
         --extra-experimental-features nix-command \
         --extra-experimental-features flakes \
-        -- dry-build --flake "$(pwd)#${HOST}"
+        -- switch --flake "$(pwd)#${HOST}"
     fi
   else
-    sudo nixos-rebuild dry-build --flake "$(pwd)#${HOST}"
+    sudo nixos-rebuild switch --flake "$(pwd)#${HOST}"
   fi
 }
 

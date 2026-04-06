@@ -1,11 +1,78 @@
 { config, ... }:
 let
-  username = config.flake.meta.owner.username;
+  gnome = config.flake.nixosModules.gnome;
   internet = config.flake.nixosModules.internet;
   multimedia = config.flake.nixosModules.multimedia;
 in {
   flake.nixosModules.desktop = { pkgs, ... }: {
-    imports = [ multimedia internet multimedia ];
+    imports = [ gnome internet multimedia ];
+    
+    # Sound
+    services.pulseaudio.enable = false;
+    security.rtkit.enable = true;
+    services.pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+    };
+
+    # Printing
+    services.printing.enable = true;
+    services.printing.browsing = true;
+    services.printing.browsedConf = ''
+      BrowseDNSSDSubTypes _cups,_print
+      BrowseLocalProtocols all
+      BrowseRemoteProtocols all
+      CreateIPPPrinterQueues All
+      BrowseProtocols all
+    '';
+    services.printing.drivers = with pkgs; [
+      cnijfilter2
+    ];
+
+    # Japanese IME
+    i18n.inputMethod = {
+      enable = true;
+      type = "ibus";
+      ibus.engines = with pkgs.ibus-engines; [ mozc ];
+    };
+
+    # Needed primarily for AppImages used
+    programs.nix-ld = {
+      enable = true;
+      libraries = with pkgs; [
+        webkitgtk_4_1
+      ];
+    };
+
+    # Switch to sudo-rs
+    security.sudo-rs.enable = true;
+  
+    # Flatpak
+    services.flatpak.enable = true;
+    services.flatpak.packages = [
+      "com.github.tchx84.Flatseal"
+    ];
+
+    # Samba
+    services.samba.winbindd.enable = true;
+    services.samba.nmbd.enable = true;
+
+    # .local name resolution
+    services.avahi = {
+      enable = true;
+      nssmdns4 = true;
+      publish = {
+        enable = true;
+        addresses = true;
+        domain = true;
+        hinfo = true;
+        userServices = true;
+        workstation = true;
+      };
+    };
+  
     home = {
       home.packages = with pkgs; [
         bambu-studio
@@ -15,42 +82,14 @@ in {
         synology-drive-client
       ];
 
-      dconf.settings."org/gnome/shell" = {
-        favorite-apps = [
-          "firefox.desktop"
-          "org.gnome.Nautilus.desktop"
-          "com.mitchellh.ghostty.desktop"
-          "signal.desktop"
-          "plex-desktop.desktop"
-          "plexamp.desktop"
-          "org.gnome.Settings.desktop"
-        ];
-      };
-
-      xdg = {
-        enable = true;
-        configFile."Signal/ephemeral.json" = {
-          force = true;
-          source = ./settings/signal-desktop/ephemeral.json;
-        };
-        configFile."autostart/signal-desktop.desktop" = {
-          force = true;
-          source = ./settings/signal-desktop/signal-desktop.desktop;
-        };
-        configFile."autostart/synology-drive.desktop" = {
-          force = true;
-          source = ./settings/synology-drive/synology-drive.desktop;
-        };
-        configFile."gtk-3.0/bookmarks" = {
-          force = true;
-          text = ''
-            file:///home/${username}/repo
-            file:///home/${username}/Documents
-            file:///home/${username}/Downloads
-            smb://mitsukoshi.local
-          '';
-        };
-      };
+      # Flatpak
+      #services.flatpak = {
+      #  enable = true;
+      #  packages = [
+      #    "com.github.tchx84.Flatseal"
+      #  ];
+      #};
     };
   };
 }
+
