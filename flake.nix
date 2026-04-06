@@ -1,7 +1,9 @@
 {
+  nixConfig.extra-experimental-features = "nix-command flakes";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/release-25.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     agenix = {
       url = "github:ryantm/agenix";
@@ -22,48 +24,62 @@
     };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
+    import-tree.url = "github:vic/import-tree";
+    wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
   };
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixos-hardware, agenix, nix-darwin, nixos-wsl, home-manager, home-manager-unstable, nix-homebrew, nix-flatpak, ... }@inputs:
-    let
-      username = "amiceli";
-      mkDarwinSystem = import ./lib/mkDarwinSystem.nix {
-        inherit nix-darwin nixpkgs agenix home-manager nix-homebrew inputs self;
+
+  outputs = inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [ (inputs.import-tree ./modules) ];
+      flake.meta.owner = {
+        username = "amiceli";
+        name = "Tony Miceli";
+        email = "6946957+wasabinator@users.noreply.github.com";
       };
-      mkNixosSystem = import ./lib/mkNixosSystem.nix {
-        inherit nixpkgs nixpkgs-unstable home-manager agenix nix-flatpak inputs self;
-      };
-    in {
-      nixosConfigurations = {
-        fw13 = mkNixosSystem { 
-          hostname = "fw13";
-          inherit username;
-        };
-        rb14 = mkNixosSystem { 
-          hostname = "rb14";
-          inherit username;
-          pkgsSrc = nixpkgs-unstable;
-          homeSrc = home-manager-unstable;
-          overlays = [
-            (final: prev: {
-             ollama-cuda = prev.ollama-cuda.overrideAttrs (old: rec {
-               version = "0.20.0";
-               src = prev.fetchFromGitHub {
-                 owner = "ollama";
-                 repo = "ollama";
-                 rev = "v${version}";
-                 hash = "sha256-QQKPXdXlsT+uMGGIyqkVZqk6OTa7VHrwDVmgDdgdKOY=";
-                };
-              });
-            })
-          ];
-        };
-        simrig   = mkNixosSystem { hostname = "simrig";   inherit username; };
-        steambox = mkNixosSystem { hostname = "steambox"; inherit username; };
-        wsl      = mkNixosSystem { hostname = "wsl";      inherit username; };
-      };
-      darwinConfigurations = {
-        air  = mkDarwinSystem { hostname = "air";  inherit username; };
-        mini = mkDarwinSystem { hostname = "mini"; inherit username; };
-      };
-  };
-}
+    };
+  }
+
+  # outputs = inputs @ { self, nixpkgs, nixpkgs-unstable, flake-parts, nixos-hardware, agenix, nix-darwin, nixos-wsl, home-manager, home-manager-unstable, nix-homebrew, nix-flatpak, ... }:
+  # let
+  #     username = "amiceli";
+  #     mkDarwinSystem = import ./lib/mkDarwinSystem.nix {
+  #       inherit nix-darwin nixpkgs agenix home-manager nix-homebrew inputs self;
+  #     };
+  #     mkNixosSystem = import ./lib/mkNixosSystem.nix {
+  #       inherit nixpkgs nixpkgs-unstable home-manager agenix nix-flatpak inputs self;
+  #     };
+#     in {
+#       nixosConfigurations = {
+#         fw13 = mkNixosSystem {
+#           hostname = "fw13";
+#           inherit username;
+#         };
+#         rb14 = mkNixosSystem {
+#           hostname = "rb14";
+#           inherit username;
+#           pkgsSrc = nixpkgs-unstable;
+#           homeSrc = home-manager-unstable;
+#           overlays = [
+#             (final: prev: {
+#              ollama-cuda = prev.ollama-cuda.overrideAttrs (old: rec {
+#                version = "0.20.0";
+#                src = prev.fetchFromGitHub {
+#                  owner = "ollama";
+#                  repo = "ollama";
+#                  rev = "v${version}";
+#                  hash = "sha256-QQKPXdXlsT+uMGGIyqkVZqk6OTa7VHrwDVmgDdgdKOY=";
+#                 };
+#               });
+#             })
+#           ];
+#         };
+#         simrig   = mkNixosSystem { hostname = "simrig";   inherit username; };
+#         steambox = mkNixosSystem { hostname = "steambox"; inherit username; };
+#         wsl      = mkNixosSystem { hostname = "wsl";      inherit username; };
+#       };
+#       darwinConfigurations = {
+#         air  = mkDarwinSystem { hostname = "air";  inherit username; };
+#         mini = mkDarwinSystem { hostname = "mini"; inherit username; };
+#       };
+#   };
+# }

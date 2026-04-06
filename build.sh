@@ -27,7 +27,7 @@ fi
 copy_hardware_config() {
   if [[ " ${NIXOS_HOSTS[@]} " =~ " ${HOST} " ]]; then
     local src="/etc/nixos/hardware-configuration.nix"
-    local dest="hosts/${HOST}/hardware-configuration.nix"
+    local dest="config/${HOST}/hardware-configuration.nix"
     if [[ ! -f "$src" ]]; then
       echo "Error: $src not found"
       exit 1
@@ -47,10 +47,10 @@ do_rebuild() {
       sudo -H nix run nix-darwin \
         --extra-experimental-features nix-command \
         --extra-experimental-features flakes \
-        -- switch --flake "$(pwd)#${HOST}"
+        -- dry-build --flake "$(pwd)#${HOST}"
     fi
   else
-    sudo nixos-rebuild switch --flake "$(pwd)#${HOST}"
+    sudo nixos-rebuild dry-build --flake "$(pwd)#${HOST}"
   fi
 }
 
