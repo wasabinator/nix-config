@@ -1,4 +1,4 @@
-{ config, inputs, ... }:
+{ config, lib, ... }:
 let
   homeConfig = { pkgs, ... }: {
     home.packages = with pkgs; [
@@ -32,7 +32,7 @@ let
   };
 in {
   flake.nixosModules.shell = { pkgs, ... }: {
-    home = (homeConfig pkgs) // {
+    home = lib.recursiveUpdate (homeConfig pkgs) {
       home.sessionVariables = {
         LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib";
       };
