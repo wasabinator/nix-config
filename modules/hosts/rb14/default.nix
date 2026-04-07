@@ -7,7 +7,6 @@ let
   lib = inputs.nixpkgs-unstable.lib;
 in {
   flake.nixosConfigurations.rb14 = lib.nixosSystem {
-    inherit pkgs;
     modules = [
       "${inputs.self}/config/rb14/hardware-configuration.nix"
       inputs.nix-flatpak.nixosModules.nix-flatpak

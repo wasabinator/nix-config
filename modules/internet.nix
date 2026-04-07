@@ -7,7 +7,7 @@
           commandLineArgs = "--disable-gpu";
         })
       ];
-      
+
       programs.firefox = {
         enable = true;
         policies = {
@@ -35,7 +35,7 @@
     };
   };
 
-  flake.darwinModules.signal = { ... }: {
+  flake.modules.darwin.internet = { ... }: {
     homebrew.casks = [
       "firefox"
       "signal"

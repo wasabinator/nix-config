@@ -15,7 +15,7 @@
     };
   };
 
-  flake.darwinModules.agenix = {
+  flake.modules.darwin.agenix = {
     imports = [ inputs.agenix.darwinModules.default ];
     age.identityPaths = [ "/private/var/root/.ssh/id_ed25519" ];
     home = {

@@ -35,4 +35,9 @@ in {
       };
     };
   };
+  flake.modules.darwin.multimedia = { ... }: {
+    home = {
+
+    };
+  };
 }

@@ -10,7 +10,7 @@ in {
     config.home-manager.users.${username} = config.home;
   };
 
-  flake.darwinModules.user-home = { config, lib, ... }: {
+  flake.modules.darwin.user-home = { config, lib, ... }: {
     options.home = lib.mkOption {
       type = lib.types.deferredModule;
       default = {};

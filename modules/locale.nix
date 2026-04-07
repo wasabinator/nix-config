@@ -4,7 +4,7 @@
     fonts.fontconfig.enable = true;
     fonts.packages = with pkgs; [
       noto-fonts-cjk-sans
-      jetbrains-mono
+      nerd-fonts.jetbrains-mono
     ];
 
     i18n.defaultLocale = "en_AU.UTF-8";
@@ -29,6 +29,6 @@
     };
   };
 
-  flake.darwinModules.locale = { ... }: {
+  flake.modules.darwin.locale = { ... }: {
   };
 }

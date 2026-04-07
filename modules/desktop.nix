@@ -1,12 +1,12 @@
 { config, ... }:
-let
-  gnome = config.flake.nixosModules.gnome;
-  internet = config.flake.nixosModules.internet;
-  multimedia = config.flake.nixosModules.multimedia;
-in {
+{
   flake.nixosModules.desktop = { pkgs, ... }: {
-    imports = [ gnome internet multimedia ];
-    
+    imports = [
+      config.flake.nixosModules.gnome
+      config.flake.nixosModules.internet
+      config.flake.nixosModules.multimedia
+    ];
+
     # Sound
     services.pulseaudio.enable = false;
     security.rtkit.enable = true;
@@ -48,7 +48,7 @@ in {
 
     # Switch to sudo-rs
     security.sudo-rs.enable = true;
-  
+
     # Flatpak
     services.flatpak.enable = true;
     services.flatpak.packages = [
@@ -72,7 +72,7 @@ in {
         workstation = true;
       };
     };
-  
+
     home = {
       home.packages = with pkgs; [
         bambu-studio
@@ -91,5 +91,106 @@ in {
       #};
     };
   };
-}
 
+  flake.modules.darwin.desktop = { pkgs, ... }: {
+    imports = [
+      config.flake.modules.darwin.internet
+      config.flake.modules.darwin.multimedia
+    ];
+
+    system.defaults.CustomUserPreferences = {
+      "com.apple.desktopservices" = {
+        DSDontWriteNetworkStores = true;
+        DSDontWriteUSBStores = true;
+      };
+    };
+
+    homebrew = {
+      enable = true;
+      onActivation = {
+        autoUpdate = true;
+        cleanup = "uninstall";
+        upgrade = true;
+      };
+      brews = [
+        "sevenzip"
+      ];
+      casks = [
+        "bambu-studio"
+        "firefox"
+        "flowvision"
+        "ghostty"
+        "iina"
+        "kindle-comic-converter"
+        "maczip"
+        "plex"
+        "plexamp"
+        "signal"
+        "synology-drive"
+      ];
+    };
+
+    # Nerdfonts
+    fonts.packages = with pkgs; [
+      nerd-fonts.jetbrains-mono
+    ];
+
+    environment.systemPackages = with pkgs; [
+      p7zip
+    ];
+
+    home = { lib, ... }: {
+      home.packages = with pkgs; [
+        dockutil
+      ];
+
+      programs = with pkgs; {
+        home-manager.enable = true;
+      };
+
+      targets.darwin.defaults = {
+        "com.apple.desktopservices" = {
+          DSDontWriteNetworkStores = true;
+          DSDontWriteUSBStores = true;
+        };
+        "com.apple.dock" = {
+          largesize = 128;
+          magnification = true;
+          orientation = "bottom";
+          show-recents = false;
+          tilesize = 36;
+        };
+        "com.apple.finder" = {
+          AppleShowAllFiles = false;
+          FXDefaultSearchScope = "SCcf";
+          FXEnableExtensionChangeWarning = false;
+          FXPreferredViewStyle = "Nlsv";
+          ShowPathbar = true;
+          ShowStatusBar = false;
+          show-recents = false;
+        };
+        NSGlobalDomain = {
+          AppleShowAllExtensions = true;
+          "com.apple.mouse" = {
+            linear = false;
+            scaling = 3.0;
+          };
+        };
+      };
+
+      home.activation.createDirs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        ${pkgs.dockutil}/bin/dockutil \
+          --remove all \
+          --add /Applications/Ghostty.app \
+          --add /Applications/Firefox.app \
+          --add /Applications/Signal.app \
+          --add /Applications/Plex.app \
+          --add /Applications/Plexamp.app \
+          --add "${pkgs.telegram-desktop}/Applications/Telegram.app" \
+          --add /System/Applications/Calendar.app \
+          --add /System/Applications/Notes.app \
+          --add "/System/Applications/System Settings.app"
+      '';
+    };
+  };
+}

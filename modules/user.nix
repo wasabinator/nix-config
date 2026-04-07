@@ -30,10 +30,13 @@ in {
     } // homeModule;
   };
 
-  flake.darwinModules = secrets // {
-    users.users.${owner.username} = {
-      name = owner.username;
-      home = "/Users/${owner.username}";
+  flake.modules.darwin = secrets // {
+    user = {
+      system.primaryUser = owner.username;
+      users.users.${owner.username} = {
+        name = owner.username;
+        home = "/Users/${owner.username}";
+      };
     } // homeModule;
   };
 }

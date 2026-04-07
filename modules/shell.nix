@@ -36,7 +36,7 @@ in {
       home.sessionVariables = {
         LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib";
       };
-      
+
       programs.bash = {
         enable = true;
         initExtra = ''
@@ -48,7 +48,7 @@ in {
           fastfetch
         '';
       };
-      
+
       programs.ghostty = {
         enable = true;
         settings = {
@@ -65,7 +65,31 @@ in {
     };
   };
 
-  flake.darwinModules.shell = { pkgs, ... }: {
-    home = homeConfig pkgs;
+  flake.modules.darwin.shell = { pkgs, ... }: {
+    home = lib.recursiveUpdate (homeConfig pkgs) {
+      programs = with pkgs; {
+        dircolors = {
+          enable = true;
+          enableZshIntegration = true;
+        };
+        direnv = {
+          enable = true;
+          enableZshIntegration = true;
+        };
+        zsh = {
+          autocd = true;
+          enable = true;
+          oh-my-zsh = {
+            enable = true;
+            plugins = [
+              "git"
+            ];
+          };
+          initContent = ''
+            fastfetch
+          '';
+        };
+      };
+    };
   };
 }
