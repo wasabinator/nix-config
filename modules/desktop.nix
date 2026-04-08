@@ -1,10 +1,10 @@
 { config, ... }:
 {
-  flake.nixosModules.desktop = { pkgs, ... }: {
-    imports = [
-      config.flake.nixosModules.gnome
-      config.flake.nixosModules.internet
-      config.flake.nixosModules.multimedia
+  flake.modules.nixos.desktop = { pkgs, ... }: {
+    imports = with config.flake.modules.nixos; [
+      gnome
+      internet
+      multimedia
     ];
 
     # Sound
@@ -49,9 +49,9 @@
     # Switch to sudo-rs
     security.sudo-rs.enable = true;
 
-    # Flatpak
-    services.flatpak.enable = true;
+    # Flatpaks
     services.flatpak.packages = [
+      "com.bambulab.BambuStudio"
       "com.github.tchx84.Flatseal"
     ];
 
@@ -75,9 +75,6 @@
 
     home = {
       home.packages = with pkgs; [
-        bambu-studio
-        plex-desktop
-        plexamp
         protonvpn-gui
         synology-drive-client
       ];
@@ -117,15 +114,9 @@
       ];
       casks = [
         "bambu-studio"
-        "firefox"
-        "flowvision"
         "ghostty"
-        "iina"
         "kindle-comic-converter"
         "maczip"
-        "plex"
-        "plexamp"
-        "signal"
         "synology-drive"
       ];
     };

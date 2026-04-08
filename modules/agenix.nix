@@ -1,5 +1,5 @@
 { config, inputs, ... }: {
-  flake.nixosModules.agenix = {
+  flake.modules.nixos.agenix = {
     imports = [ inputs.agenix.nixosModules.default ];
     age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
     home = {

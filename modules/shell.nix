@@ -31,7 +31,7 @@ let
     };
   };
 in {
-  flake.nixosModules.shell = { pkgs, ... }: {
+  flake.modules.nixos.shell = { pkgs, ... }: {
     home = lib.recursiveUpdate (homeConfig pkgs) {
       home.sessionVariables = {
         LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib";

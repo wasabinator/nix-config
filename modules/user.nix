@@ -20,7 +20,7 @@ let
     };
   };
 in {
-  flake.nixosModules = secrets // {
+  flake.modules.nixos = secrets // {
     user = {
       users.users.${owner.username} = {
         isNormalUser = true;

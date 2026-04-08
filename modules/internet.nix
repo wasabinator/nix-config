@@ -1,5 +1,5 @@
 { config, ... }: {
-  flake.nixosModules.internet = { pkgs, ... }: {
+  flake.modules.nixos.internet = { pkgs, ... }: {
     home = {
       home.packages = with pkgs; [
         #firefox

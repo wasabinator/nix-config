@@ -1,5 +1,5 @@
 { config, ... }: {
-  flake.nixosModules.locale = { pkgs, ... }: {
+  flake.modules.nixos.locale = { pkgs, ... }: {
     fonts.fontDir.enable = true;
     fonts.fontconfig.enable = true;
     fonts.packages = with pkgs; [

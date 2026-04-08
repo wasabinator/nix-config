@@ -1,6 +1,6 @@
 { config, inputs, ... }:
 {
-  flake.nixosModules.laptop = { pkgs, ... }: {
+  flake.modules.nixos.laptop = { pkgs, ... }: {
     home = {
       home.packages = with pkgs; [
         gnomeExtensions.battery-usage-wattmeter

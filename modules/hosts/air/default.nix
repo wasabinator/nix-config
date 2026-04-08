@@ -15,7 +15,7 @@ let
 in {
   flake.darwinConfigurations.air = inputs.nix-darwin.lib.darwinSystem {
     inherit pkgs;
-    modules = [
+    modules = with config.flake.modules.darwin; [
       inputs.home-manager.darwinModules.home-manager
       {
         home-manager.useGlobalPkgs = true;
@@ -27,14 +27,15 @@ in {
           user = config.flake.meta.owner.username;
         };
       }
-      config.flake.modules.darwin.user-home
-      config.flake.modules.darwin.agenix
-      config.flake.modules.darwin.user
-      config.flake.modules.darwin.air-user-secrets
-      config.flake.modules.darwin.locale
-      config.flake.modules.darwin.shell
-      config.flake.modules.darwin.desktop
-      config.flake.modules.darwin.laptop
+      user-home
+      agenix
+      user
+      air-user-secrets
+      locale
+      shell
+      desktop
+      laptop
+      development
       {
         # Let Determinate Nix handle Nix configuration
         nix.enable = false;

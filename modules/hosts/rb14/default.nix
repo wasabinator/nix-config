@@ -7,23 +7,28 @@ let
   lib = inputs.nixpkgs-unstable.lib;
 in {
   flake.nixosConfigurations.rb14 = lib.nixosSystem {
-    modules = [
+    inherit pkgs;
+    modules = with config.flake.modules.nixos; [
       "${inputs.self}/config/rb14/hardware-configuration.nix"
       inputs.nix-flatpak.nixosModules.nix-flatpak
+      {
+        services.flatpak.enable = true;
+      }
       inputs.home-manager-unstable.nixosModules.home-manager
       {
         home-manager.useGlobalPkgs = false;
         home-manager.useUserPackages = true;
       }
-      config.flake.nixosModules.user-home
-      config.flake.nixosModules.agenix
-      config.flake.nixosModules.user
-      config.flake.nixosModules.rb14-user-secrets
-      config.flake.nixosModules.locale
-      config.flake.nixosModules.shell
-      config.flake.nixosModules.desktop
-      config.flake.nixosModules.laptop
-      config.flake.nixosModules.gaming
+      user-home
+      agenix
+      user
+      rb14-user-secrets
+      locale
+      shell
+      desktop
+      laptop
+      gaming
+      development
       ({ pkgs, lib, ... }: {
         boot.loader.systemd-boot.enable = true;
         boot.loader.systemd-boot.configurationLimit = 10;

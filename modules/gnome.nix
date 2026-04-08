@@ -1,8 +1,8 @@
-{ config, ... }: 
+{ config, ... }:
 let
   username = config.flake.meta.owner.username;
 in {
-  flake.nixosModules.gnome = { pkgs, ... }: {
+  flake.modules.nixos.gnome = { pkgs, ... }: {
     services.displayManager.gdm.enable = true;
     services.desktopManager.gnome.enable = true;
     services.xserver.enable = true;

@@ -1,21 +1,4 @@
 { lib, config, inputs, age, ... }: {
-#  options.flake = {
-#    lib = lib.mkOption {
-#      type = with lib.types; lazyAttrsOf anything;
-#      default = {};
-#    };
-
-#    nixosModules = lib.mkOption {
-#      type = with lib.types; lazyAttrsOf anything;
-#      default = {};
-#    };
-
-#    darwinModules = lib.mkOption {
-#      type = with lib.types; lazyAttrsOf anything;
-#      default = {};
-#    };
-#  };
-
   config.flake.lib = {
     mkUserSecrets = { username, hosts, secrets ? [ "github" ] }:
       let

@@ -2,7 +2,7 @@
 let
   username = config.flake.meta.owner.username;
 in {
-  flake.nixosModules.user-home = { config, lib, ... }: {
+  flake.modules.nixos.user-home = { config, lib, ... }: {
     options.home = lib.mkOption {
       type = lib.types.deferredModule;
       default = {};

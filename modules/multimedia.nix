@@ -14,7 +14,7 @@ let
     "x-theora+ogg"
   ];
 in {
-  flake.nixosModules.multimedia = { pkgs, ... }: {
+  flake.modules.nixos.multimedia = { pkgs, ... }: {
     home = {
       home.packages = with pkgs; [
         celluloid
