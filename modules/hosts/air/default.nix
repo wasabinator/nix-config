@@ -1,6 +1,5 @@
 { config, inputs, lib, ... }:
 let
-  #pkgs = inputs.nixpkgs.legacyPackages."aarch64-darwin";
   pkgs = import inputs.nixpkgs {
     system = "aarch64-darwin";
     config.allowUnfree = true;

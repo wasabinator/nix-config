@@ -5,6 +5,11 @@
       "dev.zed.Zed"
     ];
 
+    environment.systemPackages = with pkgs; [
+      ollama-cuda
+      opencode
+    ];
+
     home = {
       home.packages = with pkgs; [
       ];

@@ -19,16 +19,18 @@ in {
         home-manager.useGlobalPkgs = false;
         home-manager.useUserPackages = true;
       }
-      user-home
-      agenix
-      user
-      rb14-user-secrets
-      locale
-      shell
-      desktop
-      laptop
-      gaming
-      development
+       user-home
+       agenix
+       user
+       rb14-user-secrets
+       locale
+       shell
+       desktop
+       laptop
+       gaming
+       simhub
+       simhub-user
+       development
       ({ pkgs, lib, ... }: {
         boot.loader.systemd-boot.enable = true;
         boot.loader.systemd-boot.configurationLimit = 10;
