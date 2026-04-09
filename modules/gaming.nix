@@ -1,11 +1,13 @@
 { ... }: {
-  flake.modules.nixos.gaming = { pkgs, ... }: {
+  flake.modules.nixos.gaming = { pkgs, lib, ... }: {
     programs.steam = {
       enable = true;
       remotePlay.openFirewall = true;
       dedicatedServer.openFirewall = false;
       protontricks.enable = true;
       gamescopeSession.enable = true;
+      # Proton GE can be added via extraCompatPackages
+      extraCompatPackages = with pkgs; [ proton-ge-bin ];
     };
 
     # Environment variables for Proton and Wine
