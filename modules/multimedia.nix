@@ -36,8 +36,13 @@ in {
     };
   };
   flake.modules.darwin.multimedia = { ... }: {
-    home = {
-
+    homebrew = {
+      casks = [
+        "flowvision"
+        "iina"
+        "plex"
+        "plexamp"
+      ];
     };
   };
 }
