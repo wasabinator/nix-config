@@ -19,8 +19,10 @@
   flake.modules.darwin.development = { pkgs, ... }: {
     homebrew = {
       brews = [
+        "opencode"
       ];
       casks = [
+        "zed"
       ];
     };
 
