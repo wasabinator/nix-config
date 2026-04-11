@@ -15,13 +15,13 @@
       PROTON_LOG = "1";
       WINE_CPU_TOPOLOGY = "4:2";
       PROTON_USE_WINED3D = "1";  # Force WINED3D if needed for SimHub
+      WINEARCH = "win64";  # Use 64-bit wine architecture
     };
 
     # System packages for gaming
     environment.systemPackages = with pkgs; [
-      # Wine and dependencies
-      wine
-      wine64
+      # Wine and dependencies - use wineWow64Packages for full 32/64-bit support
+      wineWow64Packages.full
       winetricks
 
       # .NET Runtime (for applications like SimHub)
@@ -36,6 +36,9 @@
       mono
       glib
       protontricks
+      
+      # Steam Tinker Launch - for SimHub injection and custom commands
+      steamtinkerlaunch
     ];
 
     # Enable gamemode for performance optimization

@@ -32,9 +32,15 @@ let
   };
 in {
   flake.modules.nixos.shell = { pkgs, ... }: {
+    environment.systemPackages = with pkgs; [
+      p7zip
+    ];
+
     home = lib.recursiveUpdate (homeConfig pkgs) {
       home.sessionVariables = {
         LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib";
+        SIMD_BRIDGE_EXE = "/run/current-system/sw/bin/acbridge.exe";
+        SIMD_WRAP_EXE = "/run/current-system/sw/bin/steam-run";
       };
 
       programs.bash = {

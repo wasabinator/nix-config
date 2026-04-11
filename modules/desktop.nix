@@ -53,6 +53,7 @@
     services.flatpak.packages = [
       "com.bambulab.BambuStudio"
       "com.github.tchx84.Flatseal"
+      "io.github.ciromattia.kcc"
     ];
 
     # Samba

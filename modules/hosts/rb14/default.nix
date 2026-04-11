@@ -5,6 +5,7 @@ let
     config.allowUnfree = true;
   };
   lib = inputs.nixpkgs-unstable.lib;
+  username = config.flake.meta.owner.username;
 in {
   flake.nixosConfigurations.rb14 = lib.nixosSystem {
     inherit pkgs;
@@ -27,7 +28,6 @@ in {
       shell
       desktop
       laptop
-      gaming
       development
       ({ pkgs, lib, ... }: {
         boot.loader.systemd-boot.enable = true;
@@ -105,6 +105,45 @@ in {
             nvidia-offload "$@"
           '')
         ];
+
+        # Copy monocoque config from config directory to user home
+        system.activationScripts.monocoque-config = lib.stringAfter [ "var" ] ''
+          mkdir -p /home/${username}/.config/monocoque
+          if [ -f ${inputs.self}/config/rb14/monocoque.config ]; then
+            cp ${inputs.self}/config/rb14/monocoque.config /home/${username}/.config/monocoque/monocoque.config
+            chown ${username}:users /home/${username}/.config/monocoque/monocoque.config
+          fi
+        '';
+
+        # Copy simd config from config directory to user home
+        system.activationScripts.simd-config = lib.stringAfter [ "var" ] ''
+          mkdir -p /home/${username}/.config/simd
+          if [ -f ${inputs.self}/config/rb14/simd.config ]; then
+            cp ${inputs.self}/config/rb14/simd.config /home/${username}/.config/simd/simd.config
+            chown ${username}:users /home/${username}/.config/simd/simd.config
+          fi
+        '';
+
+         # Create symlinks in ~/.local/bin for racing sim tools
+         system.activationScripts.racing-sim-tools = lib.stringAfter [ "var" ] ''
+           mkdir -p /home/${username}/.local/bin
+
+           # Create symlinks from system packages (already in /run/current-system/sw/bin)
+           for tool in monocoque achandle acshm; do
+             tool_path="/run/current-system/sw/bin/$tool"
+             if [ -f "$tool_path" ]; then
+               ln -sf "$tool_path" /home/${username}/.local/bin/$tool
+               chown -h ${username}:users /home/${username}/.local/bin/$tool 2>/dev/null || true
+             fi
+           done
+
+           # Create symlink for acbridge.exe from system packages
+           tool_path="/run/current-system/sw/bin/acbridge.exe"
+           if [ -f "$tool_path" ]; then
+             ln -sf "$tool_path" /home/${username}/.local/bin/acbridge.exe
+             chown -h ${username}:users /home/${username}/.local/bin/acbridge.exe 2>/dev/null || true
+           fi
+         '';
 
         system.stateVersion = "25.11";
       })
