@@ -1,10 +1,5 @@
 { ... }: {
-  flake.modules.nixos.gaming = { pkgs, lib, ... }: 
-  let
-    # Custom wine derivation with explicit wine64 binary for proper 64-bit binary execution
-    wineCustom = pkgs.callPackage ../derivations/wine-wow64-custom.nix {};
-  in
-  {
+  flake.modules.nixos.gaming = { pkgs, lib, ... }: {
     programs.steam = {
       enable = true;
       remotePlay.openFirewall = true;
@@ -25,8 +20,8 @@
 
     # System packages for gaming
     environment.systemPackages = with pkgs; [
-      # Wine and dependencies - custom derivation with explicit wine64 binary
-      wineCustom
+      # Wine and dependencies
+      wine
       winetricks
 
       # .NET Runtime (for applications like SimHub)
