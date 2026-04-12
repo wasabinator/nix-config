@@ -108,6 +108,25 @@ in
     environment.sessionVariables = {
       SIMD_CONFIG_DIR = "/home/${username}/.config/simd";
     };
+
+    # Create systemd user service for acshm (creates and maintains AC shared memory)
+    # This must be started BEFORE AC or SIMD to create the shared memory files that AC will write to.
+    # Unlike SIMD, acshm doesn't auto-start, but can be started manually or enabled as a socket service.
+    systemd.user.services.acshm = {
+      description = "Assetto Corsa Shared Memory Creator";
+      documentation = [ "https://github.com/Spacefreak18/simshmbridge" ];
+      after = [ "network-online.target" ];
+      wantedBy = [ ];  # Don't auto-start; user should start with: systemctl --user start acshm
+
+      serviceConfig = {
+        Type = "simple";
+        ExecStart = "${simshmbridge}/bin/acshm";
+        Restart = "on-failure";
+        RestartSec = 5;
+        StandardOutput = "journal";
+        StandardError = "journal";
+      };
+    };
   };
 }
 
