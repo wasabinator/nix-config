@@ -7,7 +7,7 @@ in
   let
     argtable2 = pkgs.callPackage ../derivations/argtable2.nix {};
     simapi = pkgs.callPackage ../derivations/simapi.nix {
-      argtable = argtable2;
+      inherit argtable2;
     };
     
     # Build Windows binaries using mingwW64 cross-compilation with Makefile
@@ -70,7 +70,7 @@ in
       '';
     };
     
-    wine = pkgs.wineWow64Packages.full;
+    wine = pkgs.callPackage ../derivations/wine-wow64-custom.nix {};
   in {
     environment.systemPackages = [
       simapi
@@ -96,7 +96,25 @@ in
           "WINE_BIN=${wine}/bin/.wine"
           "SIMD_BRIDGE_EXE=${simshmbridge}/bin/acbridge.exe"
         ];
+        ExecStartPre = "${wine}/bin/wineboot --init";
         ExecStart = "${simapi}/bin/simd -n -vv";
+        Restart = "on-failure";
+        RestartSec = 5;
+        StandardOutput = "journal";
+        StandardError = "journal";
+      };
+    };
+
+    # Create systemd user service for acshm (creates and maintains AC shared memory)
+    systemd.user.services.acshm = {
+      description = "Assetto Corsa Shared Memory Creator";
+      documentation = [ "https://github.com/Spacefreak18/simshmbridge" ];
+      after = [ "default.target" ];
+      wantedBy = [ ];  # Don't auto-start, start manually or as dependency
+
+      serviceConfig = {
+        Type = "simple";
+        ExecStart = "${simshmbridge}/bin/acshm";
         Restart = "on-failure";
         RestartSec = 5;
         StandardOutput = "journal";

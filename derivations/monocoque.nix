@@ -23,9 +23,8 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "Spacefreak18";
     repo = "monocoque";
-    rev = "10c172d3e1190a25361bed93f0b01c4d8540ebcf";
-    # Run: nix-prefetch-url --unpack https://github.com/Spacefreak18/monocoque/archive/master.tar.gz
-    hash = "sha256-BwCqMv5Exm9VYp4p2nlVQT4/+xVPWAbZ+1Cj4ceMuwk=";
+    rev = "e3487b3652ba64285949a929f43c0762683a8b09";
+    hash = "sha256-5E/8zHmYqaM33S5E0mhL1CEWB8B/ER9T8aAjyrQXS4k=";
     fetchSubmodules = true;
   };
 
@@ -37,7 +36,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake pkg-config ];
 
   dontCheckForBrokenSymlinks = true; # ignore arduino sketch issues
-  
+
   buildInputs = [
     simapi
     libserialport

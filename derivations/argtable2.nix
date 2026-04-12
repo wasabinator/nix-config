@@ -1,5 +1,4 @@
-{ pkgs
-, lib
+{ lib
 , stdenv
 , fetchurl
 , autoreconfHook
@@ -16,7 +15,7 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (pkgs.writeText "argtable2-ctype.patch" ''
+    (builtins.toFile "argtable2-ctype.patch" ''
       --- a/src/arg_int.c
       +++ b/src/arg_int.c
       @@ -31,0 +32 @@
@@ -24,7 +23,7 @@ stdenv.mkDerivation rec {
     '')
   ];
 
-  nativeBuildInputs = with pkgs; [
+  nativeBuildInputs = [
     autoreconfHook
     pkg-config
   ];

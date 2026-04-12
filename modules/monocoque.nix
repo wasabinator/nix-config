@@ -5,8 +5,10 @@ in
 {
   flake.modules.nixos.monocoque = { pkgs, ... }:
   let
-    simapi = pkgs.callPackage ../derivations/simapi.nix {};
     argtable2 = pkgs.callPackage ../derivations/argtable2.nix {};
+    simapi = pkgs.callPackage ../derivations/simapi.nix {
+      inherit argtable2;
+    };
     simshmbridge = pkgs.callPackage ../derivations/simshmbridge.nix {};
     monocoque = pkgs.callPackage ../derivations/monocoque.nix {
       inherit argtable2 simapi;
