@@ -105,23 +105,6 @@ in
       };
     };
 
-    # Create systemd user service for acshm (creates and maintains AC shared memory)
-    systemd.user.services.acshm = {
-      description = "Assetto Corsa Shared Memory Creator";
-      documentation = [ "https://github.com/Spacefreak18/simshmbridge" ];
-      after = [ "default.target" ];
-      wantedBy = [ ];  # Don't auto-start, start manually or as dependency
-
-      serviceConfig = {
-        Type = "simple";
-        ExecStart = "${simshmbridge}/bin/acshm";
-        Restart = "on-failure";
-        RestartSec = 5;
-        StandardOutput = "journal";
-        StandardError = "journal";
-      };
-    };
-
     environment.sessionVariables = {
       SIMD_CONFIG_DIR = "/home/${username}/.config/simd";
     };
