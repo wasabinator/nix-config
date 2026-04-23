@@ -9,10 +9,18 @@ in {
       brightnessctl
       waybar
       fuzzel
+      hypridle
       pavucontrol
+      swaylock
+      wlogout
     ];
 
     home = { pkgs, ... }: {
+      services.gnome-keyring = {
+        enable = true;
+        components = [ "secrets" ];
+      };
+
       xdg = {
         enable = true;
         configFile."niri/config.kdl".text = ''
@@ -26,7 +34,6 @@ in {
             keyboard {
               xkb {
                 layout "us"
-                //variant "intl"
               }
             }
             touchpad {
@@ -35,6 +42,7 @@ in {
             }
           }
 
+          spawn-at-startup "hypridle"
           spawn-at-startup "waybar"
           spawn-at-startup "ghostty"
 
@@ -46,7 +54,7 @@ in {
           binds {
             Mod+Slash { show-hotkey-overlay; }
 
-            Mod+P { spawn "niripwmenu"; }
+            Mod+P { spawn "wlogout" "-b" "2"; }
             Mod+T { spawn "ghostty"; }
             Mod+B { spawn "firefox"; }
             Mod+R { spawn "fuzzel"; }
@@ -113,6 +121,52 @@ in {
             match app-id="firefox" title="Private Browsing"
             block-out-from "screen-capture"
           }
+
+          window-rule {
+            match app-id="org.pulseaudio.pavucontrol"
+            open-floating true
+          }
+        '';
+
+        configFile."hypr/hypridle.conf".text = ''
+          general {
+            lock_cmd = swaylock -f
+            before_sleep_cmd = swaylock -f
+            after_sleep_cmd = swaylock -f
+            ignore_dbus_inhibit = false
+          }
+
+          listener {
+            timeout = 300
+            on-timeout = swaylock -f
+          }
+        '';
+
+        configFile."wlogout/layout".text = ''
+          {
+            "label" : "lock",
+            "action" : "loginctl lock-session",
+            "text" : "Lock",
+            "keybind" : "l"
+          }
+          {
+            "label" : "logout",
+            "action" : "loginctl terminate-user $USER",
+            "text" : "Logout",
+            "keybind" : "e"
+          }
+          {
+            "label" : "shutdown",
+            "action" : "systemctl poweroff",
+            "text" : "Shutdown",
+            "keybind" : "s"
+          }
+          {
+            "label" : "reboot",
+            "action" : "systemctl reboot",
+            "text" : "Reboot",
+            "keybind" : "r"
+          }
         '';
       };
 
@@ -124,11 +178,9 @@ in {
             position = "top";
             height = 30;
             modules-center = [ "clock" ];
-            modules-right = [ "tray" "network" "pulseaudio" "power-profiles-daemon" "battery" ];
+            modules-right = [ "tray" "network" "pulseaudio" "power-profiles-daemon" "battery" "custom/power" ];
             clock = {
-              format = "{:%H:%M}";
-              format-alt = "{:%Y-%m-%d}";
-              tooltip-format = "{:%Y-%m-%d | %H:%M}";
+              format = "{:%I:%M%p | %A, %d %B %Y}";
             };
             network = {
               format-wifi = "󰤨 {essid}";
@@ -147,7 +199,7 @@ in {
               on-click = "powerprofilesctl cycle";
             };
             pulseaudio = {
-              format = "{icon} ";
+              format = "{icon}";
               format-muted = "󰝟";
               format-icons = {
                 default = [ "󰕿" "󰖀" "󰕾" ];
@@ -162,6 +214,11 @@ in {
                 warning = 30;
                 critical = 15;
               };
+            };
+            "custom/power" = {
+              format = "⏻";
+              on-click = "wlogout -b 2";
+              tooltip = false;
             };
             tray = {
               spacing = 10;
@@ -187,11 +244,13 @@ in {
             color: #f38ba8;
           }
 
+          #tray,
           #battery,
           #network, 
-          #pulseaudio
-          #power-profiles-daemon {
-            margin: 0 10px;
+          #pulseaudio,
+          #power-profiles-daemon,
+          #custom-power {
+            margin-right: 10px;
           }
         '';
       };

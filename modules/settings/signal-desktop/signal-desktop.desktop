@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Signal
-Exec=signal-desktop --no-sandbox %U
+Exec=signal-desktop --password-store=gnome-libsecret --no-sandbox %U
 Terminal=false
 Type=Application
 Icon=signal-desktop
