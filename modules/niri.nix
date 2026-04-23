@@ -27,7 +27,7 @@ in {
           prefer-no-csd true
 
           output "eDP-1" {
-            scale 1.3
+            scale 1.5
           }
 
           input {
@@ -84,23 +84,30 @@ in {
             Mod+Minus { set-column-width "-10%"; }
             Mod+Equal { set-column-width "+10%"; }
 
+            Mod+C { center-column; }
+            Mod+Return { fullscreen-window; }
+
+            Print { screenshot; }
+            Ctrl+Print { screenshot-screen; }
+            Alt+Print { screenshot-window; }
+
             XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
             XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
             XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
             XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 
-           // Example media keys mapping using playerctl.
-           // This will work with any MPRIS-enabled media player.
-           XF86AudioPlay        allow-when-locked=true { spawn-sh "playerctl play-pause"; }
-           XF86AudioStop        allow-when-locked=true { spawn-sh "playerctl stop"; }
-           XF86AudioPrev        allow-when-locked=true { spawn-sh "playerctl previous"; }
-           XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
+            // Example media keys mapping using playerctl.
+            // This will work with any MPRIS-enabled media player.
+            XF86AudioPlay        allow-when-locked=true { spawn-sh "playerctl play-pause"; }
+            XF86AudioStop        allow-when-locked=true { spawn-sh "playerctl stop"; }
+            XF86AudioPrev        allow-when-locked=true { spawn-sh "playerctl previous"; }
+            XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
 
-           // Example brightness key mappings for brightnessctl.
-           // You can use regular spawn with multiple arguments too (to avoid going through "sh"),
-           // but you need to manually put each argument in separate "" quotes.
-           XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
-           XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
+            // Example brightness key mappings for brightnessctl.
+            // You can use regular spawn with multiple arguments too (to avoid going through "sh"),
+            // but you need to manually put each argument in separate "" quotes.
+            XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
+            XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
           }
 
           layout {
