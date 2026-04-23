@@ -26,6 +26,8 @@
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
     import-tree.url = "github:vic/import-tree";
     wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
+    niri.url = "github:sodiboo/niri-flake";
+    niri.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs:

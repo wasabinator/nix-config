@@ -3,6 +3,7 @@
   flake.modules.nixos.desktop = { pkgs, ... }: {
     imports = with config.flake.modules.nixos; [
       gnome
+      niri
       internet
       multimedia
     ];
@@ -76,6 +77,7 @@
 
     home = {
       home.packages = with pkgs; [
+        popsicle
         protonvpn-gui
         synology-drive-client
       ];

@@ -34,7 +34,7 @@ in {
         "org/gnome/desktop/interface" = {
           clock-format = "12h";
           clock-show-weekday = true;
-          text-scaling-factor = 1.25;
+          text-scaling-factor = 1;
         };
         "org/gnome/desktop/peripherals/mouse".natural-scroll = true;
         "org/gnome/desktop/privacy" = {
