@@ -6,7 +6,7 @@
     ];
 
     environment.systemPackages = with pkgs; [
-      ollama-cuda
+      #ollama-cuda
       opencode
     ];
 

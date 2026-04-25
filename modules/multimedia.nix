@@ -32,13 +32,6 @@ in {
             map (mime: { name = mime; value = "io.github.celluloid_player.Celluloid.desktop"; }) videoTypes
           );
         };
-        desktopEntries.plexamp = {
-          name = "Plexamp";
-          exec = "env XDG_CURRENT_DESKTOP=Unity plexamp %U";
-          icon = "plexamp";
-          type = "Application";
-          categories = [ "Audio" "Music" ];
-        };
       };
     };
   };

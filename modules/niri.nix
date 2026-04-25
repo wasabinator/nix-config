@@ -24,6 +24,8 @@ in {
       services.mako = {
         enable = true;
         extraConfig = ''
+          default-timeout=5000
+
           [app-name=ibus]
           invisible=1
         '';
@@ -64,7 +66,7 @@ in {
           binds {
             Mod+Slash { show-hotkey-overlay; }
 
-            Mod+A { spawn-sh "env XDG_CURRENT_DESKTOP=Unity APPIMAGE=1 plexamp"; }
+            Mod+A { spawn "plexamp"; }
             Mod+Escape { spawn "wlogout" "-b" "2"; }
             Mod+T { spawn "ghostty"; }
             Mod+B { spawn "firefox"; }
@@ -155,7 +157,7 @@ in {
           }
 
           window-rule {
-            match app-id="Plexamp"
+            match app-id="plexamp"
             open-floating true
             default-column-width { fixed 256; }
             default-window-height { fixed 480; }
@@ -243,8 +245,10 @@ in {
               on-click = "pavucontrol";
             };
             battery = {
+              interal = 2;
               format = "{icon} {capacity}% -{power:02.0f}W";
-              format-charging = "{icon} {capacity}% +{power:02.0f}W";
+              format-charging = "󰂄 {capacity}% +{power:02.0f}W";
+              format-plugged = "󰁹 {capacity}%";
               format-icons = [ "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
               states = {
                 warning = 30;
