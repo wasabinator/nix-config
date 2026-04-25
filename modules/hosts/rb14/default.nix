@@ -20,6 +20,7 @@ in {
         home-manager.useGlobalPkgs = false;
         home-manager.useUserPackages = true;
       }
+      system
       user-home
       agenix
       user

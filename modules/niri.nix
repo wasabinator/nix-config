@@ -21,6 +21,14 @@ in {
         components = [ "secrets" ];
       };
 
+      services.mako = {
+        enable = true;
+        extraConfig = ''
+          [app-name=ibus]
+          invisible=1
+        '';
+      };
+
       xdg = {
         enable = true;
         configFile."niri/config.kdl".text = ''
@@ -36,12 +44,14 @@ in {
                 layout "us"
               }
             }
+            focus-follows-mouse
             touchpad {
               natural-scroll
               tap
             }
           }
 
+          spawn-at-startup "systemctl" "--user" "start" "mako"
           spawn-at-startup "hypridle"
           spawn-at-startup "waybar"
           spawn-at-startup "ghostty"
@@ -54,14 +64,15 @@ in {
           binds {
             Mod+Slash { show-hotkey-overlay; }
 
-            Mod+P { spawn "wlogout" "-b" "2"; }
+            Mod+A { spawn-sh "env XDG_CURRENT_DESKTOP=Unity APPIMAGE=1 plexamp"; }
+            Mod+Escape { spawn "wlogout" "-b" "2"; }
             Mod+T { spawn "ghostty"; }
             Mod+B { spawn "firefox"; }
-            Mod+R { spawn "fuzzel"; }
+            Mod+Space { spawn "fuzzel"; }
             Mod+F { spawn "nautilus"; }
 
             Mod+Q { close-window; }
-            Mod+Space { toggle-overview; }
+            Mod+O { toggle-overview; }
 
             // Workspace navigation
             Mod+Up   { focus-workspace-up; }
@@ -125,14 +136,32 @@ in {
           }
 
           window-rule {
+            match app-id="firefox" title="^Picture-in-Picture$"
+            open-floating true
+            default-column-width { fixed 480; }
+            default-window-height { fixed 270; }
+            default-floating-position x=20 y=20 relative-to="bottom-right"
+          }
+
+          window-rule {
             match app-id="firefox" title="Private Browsing"
-            block-out-from "screen-capture"
+            block-out-from "screencast"
           }
 
           window-rule {
             match app-id="org.pulseaudio.pavucontrol"
             open-floating true
+            default-floating-position x=20 y=20 relative-to="top-right"
           }
+
+          window-rule {
+            match app-id="Plexamp"
+            open-floating true
+            default-column-width { fixed 256; }
+            default-window-height { fixed 480; }
+            default-floating-position x=20 y=20 relative-to="bottom-right"
+          }
+
         '';
 
         configFile."hypr/hypridle.conf".text = ''

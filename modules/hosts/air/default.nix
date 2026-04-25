@@ -26,6 +26,7 @@ in {
           user = config.flake.meta.owner.username;
         };
       }
+      system
       user-home
       agenix
       user
