@@ -21,11 +21,52 @@
     };
     i18n.supportedLocales = [ "en_AU.UTF-8/UTF-8" "ja_JP.UTF-8/UTF-8" ];
 
+    i18n.inputMethod = {
+      enable = true;
+      type = "fcitx5";
+      fcitx5.addons = with pkgs; [
+        fcitx5-mozc
+        fcitx5-gtk
+      ];
+      fcitx5.settings = {
+        globalOptions = {
+          Hotkey = {
+            TriggerKeys = "Control+space";
+          };
+        };
+        inputMethod = {
+          "Groups/0" = {
+            Name = "Default";
+            "Default Layout" = "au";
+            DefaultIM = "mozc";
+          };
+          "Groups/0/Items/0" = {
+            Name = "keyboard-au";
+            Layout = "";
+          };
+          "Groups/0/Items/1" = {
+            Name = "mozc";
+            Layout = "";
+          };
+          GroupOrder."0" = "Default";
+        };
+      };
+    };
+
     time.timeZone = "Australia/Melbourne";
 
     services.xserver.xkb = {
       layout = "au";
       variant = "";
+    };
+
+    home = {
+      home.sessionVariables = {
+        GTK_IM_MODULE = "wayland";
+        QT_IM_MODULE = "fcitx";
+        XMODIFIERS = "@im=fcitx";
+        SDL_IM_MODULE = "fcitx";
+      };
     };
   };
 

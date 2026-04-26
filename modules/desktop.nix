@@ -32,13 +32,6 @@
       cnijfilter2
     ];
 
-    # Japanese IME
-    i18n.inputMethod = {
-      enable = true;
-      type = "ibus";
-      ibus.engines = with pkgs.ibus-engines; [ mozc ];
-    };
-
     # Needed primarily for AppImages used
     programs.nix-ld = {
       enable = true;

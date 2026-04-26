@@ -53,7 +53,9 @@ in {
             }
           }
 
+          spawn-at-startup "sh" "-c" "fcitx5 -d"
           spawn-at-startup "systemctl" "--user" "start" "mako"
+
           spawn-at-startup "hypridle"
           spawn-at-startup "waybar"
           spawn-at-startup "ghostty"
@@ -70,8 +72,9 @@ in {
             Mod+Escape { spawn "wlogout" "-b" "2"; }
             Mod+T { spawn "ghostty"; }
             Mod+B { spawn "firefox"; }
-            Mod+Space { spawn "fuzzel"; }
+            Mod+R { spawn "fuzzel"; }
             Mod+F { spawn "nautilus"; }
+            Mod+Space { spawn "fcitx5-remote" "-t"; }
 
             Mod+Q { close-window; }
             Mod+O { toggle-overview; }
