@@ -1,6 +1,10 @@
 { config, ... }:
 {
   flake.modules.nixos.development = { pkgs, ... }: {
+    imports = with config.flake.modules.nixos; [
+      vscode
+    ];
+
     services.flatpak.packages = [
       "dev.zed.Zed"
     ];
@@ -23,6 +27,10 @@
   };
 
   flake.modules.darwin.development = { pkgs, ... }: {
+    imports = with config.flake.modules.darwin; [
+      vscode
+    ];
+
     homebrew = {
       brews = [
         "opencode"

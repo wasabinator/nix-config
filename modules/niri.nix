@@ -58,7 +58,8 @@ in {
 
           spawn-at-startup "hypridle"
           spawn-at-startup "waybar"
-          spawn-at-startup "ghostty"
+
+          spawn-at-startup "firefox"
 
           hotkey-overlay {
             skip-at-startup
@@ -138,6 +139,11 @@ in {
               proportion 0.66667
               proportion 1.0
             }
+          }
+
+          window-rule {
+            match app-id="firefox"
+            default-column-width { proportion 0.8; }
           }
 
           window-rule {

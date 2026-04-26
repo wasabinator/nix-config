@@ -8,6 +8,7 @@
         enableDefaultConfig = false;
         matchBlocks = {
           "github.com" = {
+            user = "git";
             identityFile = "/run/agenix/github";
           };
         };
@@ -24,6 +25,7 @@
         enableDefaultConfig = false;
         matchBlocks = {
           "github.com" = {
+            user = "git";
             identityFile = "/private/var/run/agenix/github";
           };
         };
