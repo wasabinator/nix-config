@@ -18,7 +18,7 @@
 
   flake.modules.darwin.agenix = {
     imports = [ inputs.agenix.darwinModules.default ];
-    age.identityPaths = [ "/private/var/root/.ssh/id_ed25519" ];
+    age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
     home = {
       programs.ssh = {
         enable = true;

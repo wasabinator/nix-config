@@ -9,5 +9,6 @@ in {
     services.angrr.enable = true;
   };
 
-  flake.modules.darwin.system = { pkgs, ... }: shared;
+  flake.modules.darwin.system = { ... }: shared // {
+  };
 }
