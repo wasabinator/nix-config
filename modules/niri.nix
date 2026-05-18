@@ -1,308 +1,338 @@
-{ config, ... }:
-let
-  username = config.flake.meta.owner.username;
-in {
-  flake.modules.nixos.niri = { pkgs, ... }: {
-    programs.niri.enable = true;
+{ ... }:
+{
+  flake.modules.nixos.niri =
+    { pkgs, ... }:
+    {
+      programs.niri.enable = true;
 
-    environment.systemPackages = with pkgs; [
-      brightnessctl
-      waybar
-      fuzzel
-      hypridle
-      pavucontrol
-      swaylock
-      wlogout
-    ];
+      environment.systemPackages = with pkgs; [
+        brightnessctl
+        waybar
+        fuzzel
+        hypridle
+        pavucontrol
+        swaylock
+        wlogout
+        xwayland-satellite
+      ];
 
-    home = { pkgs, ... }: {
-      services.gnome-keyring = {
-        enable = true;
-        components = [ "secrets" ];
-      };
+      home =
+        { pkgs, ... }:
+        {
+          services.gnome-keyring = {
+            enable = true;
+            components = [ "secrets" ];
+          };
 
-      services.mako = {
-        enable = true;
-        extraConfig = ''
-          default-timeout=5000
+          services.mako = {
+            enable = true;
+            extraConfig = ''
+              default-timeout=5000
 
-          [app-name=ibus]
-          invisible=1
-        '';
-      };
+              [app-name=ibus]
+              invisible=1
+            '';
+          };
 
-      xdg = {
-        enable = true;
-        configFile."niri/config.kdl".text = ''
-          prefer-no-csd true
+          xdg = {
+            enable = true;
+            configFile."niri/config.kdl".text = ''
+              prefer-no-csd true
 
-          output "eDP-1" {
-            scale 1.5
-          }
-
-          input {
-            keyboard {
-              xkb {
-                layout "us"
+              output "eDP-1" {
+                scale 1.5
               }
-            }
-            focus-follows-mouse
-            touchpad {
-              natural-scroll
-              tap
-            }
-          }
 
-          spawn-at-startup "sh" "-c" "fcitx5 -d"
-          spawn-at-startup "systemctl" "--user" "start" "mako"
+              input {
+                keyboard {
+                  xkb {
+                    layout "us"
+                  }
+                }
+                focus-follows-mouse
+                touchpad {
+                  natural-scroll
+                  tap
+                }
+              }
 
-          spawn-at-startup "hypridle"
-          spawn-at-startup "waybar"
+              spawn-at-startup "sh" "-c" "fcitx5 -d"
+              spawn-at-startup "systemctl" "--user" "start" "mako"
 
-          spawn-at-startup "firefox"
+              spawn-at-startup "hypridle"
+              spawn-at-startup "waybar"
 
-          hotkey-overlay {
-            skip-at-startup
-            hide-not-bound
-          }
+              spawn-at-startup "firefox"
 
-          binds {
-            Mod+Slash { show-hotkey-overlay; }
+              hotkey-overlay {
+                skip-at-startup
+                hide-not-bound
+              }
 
-            Mod+A { spawn "plexamp"; }
-            Mod+Escape { spawn "wlogout" "-b" "2"; }
-            Mod+T { spawn "ghostty"; }
-            Mod+B { spawn "firefox"; }
-            Mod+R { spawn "fuzzel"; }
-            Mod+F { spawn "nautilus"; }
-            Mod+Space { spawn "fcitx5-remote" "-t"; }
+              binds {
+                Mod+Slash { show-hotkey-overlay; }
 
-            Mod+Q { close-window; }
-            Mod+O { toggle-overview; }
+                Mod+A { spawn "plexamp"; }
+                Mod+Escape { spawn "wlogout" "-b" "2"; }
+                Mod+T { spawn "ghostty"; }
+                Mod+B { spawn "firefox"; }
+                Mod+R { spawn "fuzzel"; }
+                Mod+F { spawn "nautilus"; }
+                Mod+Space { spawn "fcitx5-remote" "-t"; }
 
-            // Workspace navigation
-            Mod+Up   { focus-workspace-up; }
-            Mod+Down { focus-workspace-down; }
+                Mod+Q { close-window; }
+                Mod+O { toggle-overview; }
 
-            // Move window to another workspace
-            Mod+Shift+Up   { move-window-to-workspace-up; }
-            Mod+Shift+Down { move-window-to-workspace-down; }
+                // Workspace navigation
+                Mod+Up   { focus-workspace-up; }
+                Mod+Down { focus-workspace-down; }
 
-            // Column navigation (horizontal)
-            Mod+Left  { focus-column-left; }
-            Mod+Right { focus-column-right; }
+                // Move window to another workspace
+                Mod+Shift+Up   { move-window-to-workspace-up; }
+                Mod+Shift+Down { move-window-to-workspace-down; }
 
-            // Move column horizontally
-            Mod+Shift+Left  { move-column-left; }
-            Mod+Shift+Right { move-column-right; }
+                // Column navigation (horizontal)
+                Mod+Left  { focus-column-left; }
+                Mod+Right { focus-column-right; }
 
-            // Width adjustments
-            Mod+W { switch-preset-column-width; }
-            Mod+Minus { set-column-width "-10%"; }
-            Mod+Equal { set-column-width "+10%"; }
+                // Move column horizontally
+                Mod+Shift+Left  { move-column-left; }
+                Mod+Shift+Right { move-column-right; }
 
-            Mod+C { center-column; }
-            Mod+Return { fullscreen-window; }
+                // Width adjustments
+                Mod+W { switch-preset-column-width; }
+                Mod+Minus { set-column-width "-10%"; }
+                Mod+Equal { set-column-width "+10%"; }
 
-            Print { screenshot; }
-            Ctrl+Print { screenshot-screen; }
-            Alt+Print { screenshot-window; }
+                Mod+C { center-column; }
+                Mod+Return { fullscreen-window; }
 
-            XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
-            XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
-            XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
-            XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+                Print { screenshot; }
+                Ctrl+Print { screenshot-screen; }
+                Alt+Print { screenshot-window; }
 
-            // Example media keys mapping using playerctl.
-            // This will work with any MPRIS-enabled media player.
-            XF86AudioPlay        allow-when-locked=true { spawn-sh "playerctl play-pause"; }
-            XF86AudioStop        allow-when-locked=true { spawn-sh "playerctl stop"; }
-            XF86AudioPrev        allow-when-locked=true { spawn-sh "playerctl previous"; }
-            XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
+                XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
+                XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
+                XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+                XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 
-            // Example brightness key mappings for brightnessctl.
-            // You can use regular spawn with multiple arguments too (to avoid going through "sh"),
-            // but you need to manually put each argument in separate "" quotes.
-            XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
-            XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
-          }
+                // Example media keys mapping using playerctl.
+                // This will work with any MPRIS-enabled media player.
+                XF86AudioPlay        allow-when-locked=true { spawn-sh "playerctl play-pause"; }
+                XF86AudioStop        allow-when-locked=true { spawn-sh "playerctl stop"; }
+                XF86AudioPrev        allow-when-locked=true { spawn-sh "playerctl previous"; }
+                XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
 
-          layout {
-            gaps 8
-            focus-ring {
-              width 2
-            }
+                // Example brightness key mappings for brightnessctl.
+                // You can use regular spawn with multiple arguments too (to avoid going through "sh"),
+                // but you need to manually put each argument in separate "" quotes.
+                XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
+                XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
+              }
 
-            preset-column-widths {
-              proportion 0.33333
-              proportion 0.5
-              proportion 0.66667
-              proportion 1.0
-            }
-          }
+              layout {
+                gaps 8
+                focus-ring {
+                  width 2
+                }
 
-          window-rule {
-            match app-id="firefox"
-            default-column-width { proportion 0.8; }
-          }
+                preset-column-widths {
+                  proportion 0.33333
+                  proportion 0.5
+                  proportion 0.66667
+                  proportion 1.0
+                }
+              }
 
-          window-rule {
-            match app-id="firefox" title="^Picture-in-Picture$"
-            open-floating true
-            default-column-width { fixed 480; }
-            default-window-height { fixed 270; }
-            default-floating-position x=20 y=20 relative-to="bottom-right"
-          }
+              window-rule {
+                geometry-corner-radius 4
+                clip-to-geometry true
+              }
 
-          window-rule {
-            match app-id="firefox" title="Private Browsing"
-            block-out-from "screencast"
-          }
+              window-rule {
+                match app-id="firefox"
+                default-column-width { proportion 0.8; }
+              }
 
-          window-rule {
-            match app-id="org.pulseaudio.pavucontrol"
-            open-floating true
-            default-floating-position x=20 y=20 relative-to="top-right"
-          }
+              window-rule {
+                match app-id="firefox" title="^Picture-in-Picture$"
+                open-floating true
+                default-column-width { fixed 480; }
+                default-window-height { fixed 270; }
+                default-floating-position x=20 y=20 relative-to="bottom-right"
+              }
 
-          window-rule {
-            match app-id="plexamp"
-            open-floating true
-            default-column-width { fixed 256; }
-            default-window-height { fixed 480; }
-            default-floating-position x=20 y=20 relative-to="bottom-right"
-          }
+              window-rule {
+                match app-id="firefox" title="Private Browsing"
+                block-out-from "screencast"
+              }
 
-        '';
+              window-rule {
+                match app-id="org.pulseaudio.pavucontrol"
+                open-floating true
+                default-floating-position x=20 y=20 relative-to="top-right"
+              }
 
-        configFile."hypr/hypridle.conf".text = ''
-          general {
-            lock_cmd = swaylock -f
-            before_sleep_cmd = swaylock -f
-            after_sleep_cmd = swaylock -f
-            ignore_dbus_inhibit = false
-          }
+              window-rule {
+                match app-id="plexamp"
+                open-floating true
+                default-column-width { fixed 256; }
+                default-window-height { fixed 480; }
+                default-floating-position x=20 y=20 relative-to="bottom-right"
+              }
 
-          listener {
-            timeout = 300
-            on-timeout = swaylock -f
-          }
-        '';
+            '';
 
-        configFile."wlogout/layout".text = ''
-          {
-            "label" : "lock",
-            "action" : "loginctl lock-session",
-            "text" : "Lock",
-            "keybind" : "l"
-          }
-          {
-            "label" : "logout",
-            "action" : "loginctl terminate-user $USER",
-            "text" : "Logout",
-            "keybind" : "e"
-          }
-          {
-            "label" : "shutdown",
-            "action" : "systemctl poweroff",
-            "text" : "Shutdown",
-            "keybind" : "s"
-          }
-          {
-            "label" : "reboot",
-            "action" : "systemctl reboot",
-            "text" : "Reboot",
-            "keybind" : "r"
-          }
-        '';
-      };
+            configFile."hypr/hypridle.conf".text = ''
+              general {
+                lock_cmd = swaylock -f
+                before_sleep_cmd = swaylock -f
+                after_sleep_cmd = swaylock -f
+                ignore_dbus_inhibit = false
+              }
 
-      programs.waybar = {
-        enable = true;
-        settings = {
-          mainBar = {
-            layer = "top";
-            position = "top";
-            height = 30;
-            modules-center = [ "clock" ];
-            modules-right = [ "tray" "network" "pulseaudio" "power-profiles-daemon" "battery" "custom/power" ];
-            clock = {
-              format = "{:%I:%M%p | %A, %d %B %Y}";
-            };
-            network = {
-              format-wifi = "󰤨 {essid}";
-              format-ethernet = "󰈀";
-              format-disconnected = "󰤭";
-              tooltips = true;
-            };
-            "power-profiles-daemon" = {
-              format = "{icon}";
-              format-icons = {
-                performance = "󰠠";
-                balanced = "󰗑";
-                "power-saver" = "󰌪";
+              listener {
+                timeout = 300
+                on-timeout = swaylock -f
+              }
+            '';
+
+            configFile."wlogout/layout".text = ''
+              {
+                "label" : "lock",
+                "action" : "loginctl lock-session",
+                "text" : "Lock",
+                "keybind" : "l"
+              }
+              {
+                "label" : "logout",
+                "action" : "loginctl terminate-user $USER",
+                "text" : "Logout",
+                "keybind" : "e"
+              }
+              {
+                "label" : "shutdown",
+                "action" : "systemctl poweroff",
+                "text" : "Shutdown",
+                "keybind" : "s"
+              }
+              {
+                "label" : "reboot",
+                "action" : "systemctl reboot",
+                "text" : "Reboot",
+                "keybind" : "r"
+              }
+            '';
+          };
+
+          programs.waybar = {
+            enable = true;
+            settings = {
+              mainBar = {
+                layer = "top";
+                position = "top";
+                height = 30;
+                modules-center = [ "clock" ];
+                modules-right = [
+                  "tray"
+                  "network"
+                  "pulseaudio"
+                  "power-profiles-daemon"
+                  "battery"
+                  "custom/power"
+                ];
+                clock = {
+                  format = "{:%I:%M%p | %A, %d %B %Y}";
+                };
+                network = {
+                  format-wifi = "󰤨 {essid}";
+                  format-ethernet = "󰈀";
+                  format-disconnected = "󰤭";
+                  tooltips = true;
+                };
+                "power-profiles-daemon" = {
+                  format = "{icon}";
+                  format-icons = {
+                    performance = "󰠠";
+                    balanced = "󰗑";
+                    "power-saver" = "󰌪";
+                  };
+                  tooltip-format = "{profile}";
+                  on-click = "powerprofilesctl cycle";
+                };
+                pulseaudio = {
+                  format = "{icon}";
+                  format-muted = "󰝟";
+                  format-icons = {
+                    default = [
+                      "󰕿"
+                      "󰖀"
+                      "󰕾"
+                    ];
+                  };
+                  on-click = "pavucontrol";
+                };
+                battery = {
+                  interal = 2;
+                  format = "{icon} {capacity}% -{power:02.0f}W";
+                  format-charging = "󰂄 {capacity}% +{power:02.0f}W";
+                  format-plugged = "󰁹 {capacity}%";
+                  format-icons = [
+                    "󰁺"
+                    "󰁻"
+                    "󰁼"
+                    "󰁽"
+                    "󰁾"
+                    "󰁿"
+                    "󰂀"
+                    "󰂁"
+                    "󰂂"
+                    "󰁹"
+                  ];
+                  states = {
+                    warning = 30;
+                    critical = 15;
+                  };
+                };
+                "custom/power" = {
+                  format = "⏻";
+                  on-click = "wlogout -b 2";
+                  tooltip = false;
+                };
+                tray = {
+                  spacing = 10;
+                };
               };
-              tooltip-format = "{profile}";
-              on-click = "powerprofilesctl cycle";
             };
-            pulseaudio = {
-              format = "{icon}";
-              format-muted = "󰝟";
-              format-icons = {
-                default = [ "󰕿" "󰖀" "󰕾" ];
-              };
-              on-click = "pavucontrol";
-            };
-            battery = {
-              interal = 2;
-              format = "{icon} {capacity}% -{power:02.0f}W";
-              format-charging = "󰂄 {capacity}% +{power:02.0f}W";
-              format-plugged = "󰁹 {capacity}%";
-              format-icons = [ "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
-              states = {
-                warning = 30;
-                critical = 15;
-              };
-            };
-            "custom/power" = {
-              format = "⏻";
-              on-click = "wlogout -b 2";
-              tooltip = false;
-            };
-            tray = {
-              spacing = 10;
-            };
+            style = ''
+              * {
+                font-family: "JetBrains Mono Nerd Font";
+                font-size: 13px;
+              }
+              window#waybar {
+                background: #1e1e2e;
+                color: #cdd6f4;
+              }
+              #battery {
+                color: #a6e3a1;
+              }
+              #battery.warning {
+                color: #f9e2af;
+              }
+              #battery.critical {
+                color: #f38ba8;
+              }
+
+              #tray,
+              #battery,
+              #network,
+              #pulseaudio,
+              #power-profiles-daemon,
+              #custom-power {
+                margin-right: 10px;
+              }
+            '';
           };
         };
-        style = ''
-          * {
-            font-family: "JetBrains Mono Nerd Font";
-            font-size: 13px;
-          }
-          window#waybar {
-            background: #1e1e2e;
-            color: #cdd6f4;
-          }
-          #battery {
-            color: #a6e3a1;
-          }
-          #battery.warning {
-            color: #f9e2af;
-          }
-          #battery.critical {
-            color: #f38ba8;
-          }
-
-          #tray,
-          #battery,
-          #network, 
-          #pulseaudio,
-          #power-profiles-daemon,
-          #custom-power {
-            margin-right: 10px;
-          }
-        '';
-      };
     };
-  };
 }

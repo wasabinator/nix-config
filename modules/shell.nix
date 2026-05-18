@@ -3,6 +3,7 @@ let
   homeConfig = { pkgs, ... }: {
     home.packages = with pkgs; [
       fastfetch
+      (nnn.override { withNerdIcons = true; })
     ];
 
     home.sessionVariables = {
@@ -51,9 +52,20 @@ in {
         '';
       };
 
+      programs.fish = {
+        enable = true;
+        interactiveShellInit = ''
+          eval (starship init fish)
+          fastfetch
+        '';
+      };
+
       programs.ghostty = {
         enable = true;
-        settings = {
+        enableFishIntegration = true;
+        settings = {          
+          command = "fish";
+
           font-family = "Jetbrains Mono";
           font-size = 12;
           keybind = [

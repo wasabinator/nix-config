@@ -36,6 +36,7 @@
       mono
       glib
       protontricks
+      protonup-ng
       
       # Steam Tinker Launch - for SimHub injection and custom commands
       steamtinkerlaunch

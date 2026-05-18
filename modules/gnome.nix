@@ -11,6 +11,7 @@ in {
       home.packages = with pkgs; [
         gnomeExtensions.appindicator
         gnomeExtensions.dash-to-dock
+        gnomeExtensions.kimpanel
         gnomeExtensions.tiling-shell
         gnome-tweaks
       ];
@@ -46,6 +47,7 @@ in {
         "org/gnome/shell".enabled-extensions = with pkgs.gnomeExtensions; [
           appindicator.extensionUuid
           dash-to-dock.extensionUuid
+          kimpanel.extensionUuid
           tiling-shell.extensionUuid
         ];
         "org/gtk/gtk4/settings/file-chooser".sort-directories-first = false;
