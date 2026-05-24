@@ -28,6 +28,7 @@
 
   flake.modules.darwin.development = { pkgs, ... }: {
     imports = with config.flake.modules.darwin; [
+      riscv
       vscode
     ];
 
