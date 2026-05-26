@@ -1,0 +1,53 @@
+# NOTE: This machine is on macOS Tahoe which has some permission issues. If they persist, run the following commands and try again:
+#       sudo rm -rf "/Applications/Nix Apps"
+#       rm -rf ~/Applications/Home\ Manager\ Apps
+{ config, inputs, lib, ... }:
+let
+  pkgs = import inputs.nixpkgs {
+    system = "aarch64-darwin";
+    config.allowUnfree = true;
+    overlays = [
+      (final: prev: {
+        direnv = prev.direnv.overrideAttrs (old: {
+          doCheck = false;
+        });
+      })
+    ];
+  };
+in {
+  flake.darwinConfigurations.mini = inputs.nix-darwin.lib.darwinSystem {
+    inherit pkgs;
+    modules = with config.flake.modules.darwin; [
+      inputs.home-manager.darwinModules.home-manager
+      {
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+      }
+      inputs.nix-homebrew.darwinModules.nix-homebrew {
+        nix-homebrew = {
+          enable = true;
+          user = config.flake.meta.owner.username;
+        };
+      }
+      system
+      user-home
+      agenix
+      user
+      mini-user-secrets
+      locale
+      shell
+      desktop
+      laptop
+      development
+      #paneru
+      {
+        # Let Determinate Nix handle Nix configuration
+        nix.enable = false;
+        system.configurationRevision = inputs.nix-darwin.rev or inputs.nix-darwin.dirtyRev or null;
+        system.stateVersion = 5;
+        nixpkgs.hostPlatform = "aarch64-darwin";
+        networking.hostName = "mini";
+      }
+    ];
+  };
+}

@@ -102,7 +102,6 @@
       ];
       casks = [
         "bambu-studio"
-        "ghostty"
         "kindle-comic-converter"
         "maczip"
         "synology-drive"

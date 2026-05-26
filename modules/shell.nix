@@ -80,6 +80,9 @@ in {
   };
 
   flake.modules.darwin.shell = { pkgs, ... }: {
+    homebrew.casks = [
+      "ghostty"
+    ];
     home = lib.recursiveUpdate (homeConfig pkgs) {
       programs = with pkgs; {
         dircolors = {
