@@ -55,6 +55,7 @@ in {
       programs.fish = {
         enable = true;
         interactiveShellInit = ''
+          set fish_color_valid_path
           eval (starship init fish)
           fastfetch
         '';

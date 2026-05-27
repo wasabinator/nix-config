@@ -3,6 +3,7 @@
     home = {
       home.packages = with pkgs; [
         #firefox
+        chromium
         (pkgs.signal-desktop.override {
           commandLineArgs = "--disable-gpu";
         })

@@ -10,6 +10,7 @@
         waybar
         fuzzel
         hypridle
+        networkmanager_dmenu
         pavucontrol
         swaylock
         wlogout
@@ -36,6 +37,11 @@
 
           xdg = {
             enable = true;
+            configFile."networkmanager-dmenu/config.ini".text = ''
+              [dmenu]
+              dmenu_command = fuzzel -d
+            '';
+
             configFile."niri/config.kdl".text = ''
               prefer-no-csd true
 
@@ -150,6 +156,11 @@
               }
 
               window-rule {
+                match app-id="com.mitchellh.ghostty"
+                default-column-width { proportion 0.6; }
+              }
+
+              window-rule {
                 match app-id="firefox"
                 default-column-width { proportion 0.8; }
               }
@@ -157,8 +168,8 @@
               window-rule {
                 match app-id="firefox" title="^Picture-in-Picture$"
                 open-floating true
-                default-column-width { fixed 480; }
-                default-window-height { fixed 270; }
+                default-column-width { fixed 640; }
+                default-window-height { fixed 360; }
                 default-floating-position x=20 y=20 relative-to="bottom-right"
               }
 
@@ -249,6 +260,7 @@
                   format-ethernet = "󰈀";
                   format-disconnected = "󰤭";
                   tooltips = true;
+                  on-click = "networkmanager_dmenu";
                 };
                 "power-profiles-daemon" = {
                   format = "{icon}";
