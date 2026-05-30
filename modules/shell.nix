@@ -65,7 +65,7 @@ in {
         enable = true;
         enableFishIntegration = true;
         settings = {          
-          command = "fish";
+          command = "${pkgs.fish}/bin/fish";
 
           font-family = "Jetbrains Mono";
           font-size = 12;
@@ -94,6 +94,23 @@ in {
           enable = true;
           enableZshIntegration = true;
         };
+        fish = {
+          enable = true;
+          interactiveShellInit = ''
+            set fish_color_valid_path
+            eval (starship init fish)
+            fastfetch
+          '';
+        };
+        ghostty = {
+          enable = true;
+          package = null; # On darwin we need to use homebrew
+          enableFishIntegration = true;
+          settings = {          
+            command = "${pkgs.zsh}/bin/zsh -l -c 'exec ${pkgs.fish}/bin/fish'";
+            font-size = 14;
+          };
+        };
         zsh = {
           autocd = true;
           enable = true;
@@ -104,7 +121,9 @@ in {
             ];
           };
           initContent = ''
-            fastfetch
+            if [[ -z "$ZSH_EXECUTION_STRING" || "$ZSH_EXECUTION_STRING" != *fish* ]]; then
+              fastfetch
+            fi
           '';
         };
       };
