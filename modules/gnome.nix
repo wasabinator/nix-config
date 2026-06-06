@@ -7,12 +7,14 @@ in {
     services.desktopManager.gnome.enable = true;
     services.xserver.enable = true;
 
+    services.gnome.gnome-keyring.enable = true;
+    security.pam.services.login.enableGnomeKeyring = true;
+
     home = { lib, ... }: {
       home.packages = with pkgs; [
         gnomeExtensions.appindicator
         gnomeExtensions.dash-to-dock
         gnomeExtensions.kimpanel
-        gnomeExtensions.tiling-shell
         gnome-tweaks
       ];
 
@@ -48,7 +50,6 @@ in {
           appindicator.extensionUuid
           dash-to-dock.extensionUuid
           kimpanel.extensionUuid
-          tiling-shell.extensionUuid
         ];
         "org/gtk/gtk4/settings/file-chooser".sort-directories-first = false;
         "org/gtk/settings/file-chooser".clock-format = "12h";

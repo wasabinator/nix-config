@@ -44,11 +44,26 @@
     security.sudo-rs.enable = true;
 
     # Flatpaks
-    services.flatpak.packages = [
-      "com.bambulab.BambuStudio"
-      "com.github.tchx84.Flatseal"
-      "io.github.ciromattia.kcc"
-    ];
+    services.flatpak = {
+      packages = [
+        "com.bambulab.BambuStudio"
+        "com.github.tchx84.Flatseal"
+        "io.github.ciromattia.kcc"
+        "org.signal.Signal"
+      ];
+      overrides = {
+        "org.signal.Signal" = {
+          Context.sockets = "wayland";
+          Environment = {
+            ELECTRON_OZONE_PLATFORM_HINT = "wayland";
+          };
+          "Session Bus Policy" = {
+            "org.kde.StatusNotifierWatcher" = "talk";
+            "org.freedesktop.StatusNotifierWatcher" = "talk";
+          };
+        };
+      };
+    };
 
     # Samba
     services.samba.winbindd.enable = true;

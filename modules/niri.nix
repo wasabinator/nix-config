@@ -64,11 +64,13 @@
 
               spawn-at-startup "sh" "-c" "fcitx5 -d"
               spawn-at-startup "systemctl" "--user" "start" "mako"
+              spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
 
               spawn-at-startup "hypridle"
               spawn-at-startup "waybar"
 
               spawn-at-startup "firefox"
+              spawn-at-startup "flatpak" "run" "org.signal.Signal"
 
               hotkey-overlay {
                 skip-at-startup

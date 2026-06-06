@@ -8,21 +8,14 @@
 
     environment.systemPackages = with pkgs; [
       gnumake
-      (llama-cpp.override { cudaSupport = true; })
-      opencode
+      #(llama-cpp.override { cudaSupport = true; })
+      #opencode
     ];
 
     home = {
       programs.direnv = {
         enable = true;
         nix-direnv.enable = true;
-      };
-
-      programs.helix = {
-        enable = true;
-        extraPackages = with pkgs; [
-          asm-lsp
-        ];
       };
 
       home.packages = with pkgs; [
