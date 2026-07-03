@@ -1,15 +1,15 @@
 { config, inputs, ... }:
 let
-  pkgs = import inputs.nixpkgs-unstable {
+  pkgs = import inputs.nixpkgs {
     system = "x86_64-linux";
     config.allowUnfree = true;
     config.allowNativeParallelBuilds = true;
-    pkgsi686 = import inputs.nixpkgs-unstable {
+    pkgsi686 = import inputs.nixpkgs {
       system = "i686-linux";
       config.allowUnfree = true;
     };
   };
-  lib = inputs.nixpkgs-unstable.lib;
+  lib = inputs.nixpkgs.lib;
   username = config.flake.meta.owner.username;
 in
 {
@@ -21,7 +21,7 @@ in
       {
         services.flatpak.enable = true;
       }
-      inputs.home-manager-unstable.nixosModules.home-manager
+      inputs.home-manager.nixosModules.home-manager
       {
         home-manager.useGlobalPkgs = false;
         home-manager.useUserPackages = true;

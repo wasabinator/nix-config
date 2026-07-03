@@ -15,6 +15,13 @@ let
   ];
 in {
   flake.modules.nixos.multimedia = { pkgs, ... }: {
+    environment.systemPackages = with pkgs; [
+      #(spotiflac.overrideAttrs {
+      #  patches = [
+      #    ../patches/spotiflac/0001-fix-implement-retry-and-backoff-for-Qobuz-and-Amazon.patch 
+      #  ];
+      #})
+    ];
     home = {
       home.packages = with pkgs; [
         celluloid

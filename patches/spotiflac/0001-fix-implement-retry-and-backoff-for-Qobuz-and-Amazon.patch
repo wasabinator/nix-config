@@ -1,0 +1,123 @@
+From d030fa60749520bd3d9284dcc7aaa2083f81c661 Mon Sep 17 00:00:00 2001
+From: Chronos778 <god669213@gmail.com>
+Date: Sun, 14 Jun 2026 14:01:00 +0530
+Subject: [PATCH] fix: implement retry and backoff for Qobuz and Amazon APIs to
+ fix #948
+
+---
+ backend/community_endpoints.go |  7 +++--
+ backend/qobuz.go               | 54 ++++++++++++++++------------------
+ 2 files changed, 30 insertions(+), 31 deletions(-)
+
+diff --git a/backend/community_endpoints.go b/backend/community_endpoints.go
+index 9bf9412..fbda30f 100644
+--- a/backend/community_endpoints.go
++++ b/backend/community_endpoints.go
+@@ -156,14 +156,17 @@ func doCommunityRequest(client *http.Client, service string, reqFn func() (*http
+ 			return nil, err
+ 		}
+ 
+-		if resp.StatusCode != http.StatusTooManyRequests {
++		if resp.StatusCode != http.StatusTooManyRequests && resp.StatusCode != http.StatusServiceUnavailable && resp.StatusCode != http.StatusBadGateway && resp.StatusCode != http.StatusGatewayTimeout {
+ 			ClearRateLimitCooldown()
+ 			return resp, nil
+ 		}
+ 
+ 		wait := communityRetryAfter(resp)
++		if resp.StatusCode >= 500 && wait == communityRateLimitFallbackWait {
++			wait = time.Duration(attempt+1) * 5 * time.Second
++		}
+ 		resp.Body.Close()
+-		lastErr = fmt.Errorf("%s community API rate limited (429)", service)
++		lastErr = fmt.Errorf("%s API returned %d, retrying", service, resp.StatusCode)
+ 
+ 		if attempt == communityRateLimitMaxRetries {
+ 			break
+diff --git a/backend/qobuz.go b/backend/qobuz.go
+index 4f043a1..76def3d 100644
+--- a/backend/qobuz.go
++++ b/backend/qobuz.go
+@@ -468,23 +468,18 @@ func (q *QobuzDownloader) DownloadFromWJHE(trackID int64, quality string) (strin
+ 	apiURL := buildQobuzWJHEDownloadURL(trackID, quality)
+ 	client := newQobuzNoRedirectClient(q.client)
+ 
+-	req, err := NewRequestWithDefaultHeaders(http.MethodHead, apiURL, nil)
+-	if err != nil {
+-		return "", fmt.Errorf("failed to create WJHE request: %w", err)
+-	}
+-
+-	resp, err := client.Do(req)
++	resp, err := doCommunityRequest(client, "WJHE", func() (*http.Request, error) {
++		return NewRequestWithDefaultHeaders(http.MethodHead, apiURL, nil)
++	})
+ 	if err != nil {
+ 		return "", fmt.Errorf("failed to reach WJHE: %w", err)
+ 	}
+ 
+ 	if resp.StatusCode == http.StatusMethodNotAllowed || resp.StatusCode == http.StatusNotImplemented {
+ 		resp.Body.Close()
+-		req, err = NewRequestWithDefaultHeaders(http.MethodGet, apiURL, nil)
+-		if err != nil {
+-			return "", fmt.Errorf("failed to create WJHE fallback request: %w", err)
+-		}
+-		resp, err = client.Do(req)
++		resp, err = doCommunityRequest(client, "WJHE", func() (*http.Request, error) {
++			return NewRequestWithDefaultHeaders(http.MethodGet, apiURL, nil)
++		})
+ 		if err != nil {
+ 			return "", fmt.Errorf("failed to reach WJHE with GET fallback: %w", err)
+ 		}
+@@ -613,15 +608,16 @@ func (q *QobuzDownloader) DownloadFromGDStudio(trackID int64, quality string, ap
+ 		"s":      {buildQobuzGDStudioSignature(apiURL, trackIDString, ts9)},
+ 	}
+ 
+-	req, err := NewRequestWithDefaultHeaders(http.MethodPost, apiURL, strings.NewReader(payload.Encode()))
+-	if err != nil {
+-		return "", fmt.Errorf("failed to create GDStudio request: %w", err)
+-	}
+-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+-	req.Header.Set("Origin", fmt.Sprintf("https://%s", signatureHost))
+-	req.Header.Set("Referer", fmt.Sprintf("https://%s/", signatureHost))
+-
+-	resp, err := q.client.Do(req)
++	resp, err := doCommunityRequest(q.client, "GDStudio", func() (*http.Request, error) {
++		req, err := NewRequestWithDefaultHeaders(http.MethodPost, apiURL, strings.NewReader(payload.Encode()))
++		if err != nil {
++			return nil, err
++		}
++		req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
++		req.Header.Set("Origin", fmt.Sprintf("https://%s", signatureHost))
++		req.Header.Set("Referer", fmt.Sprintf("https://%s/", signatureHost))
++		return req, nil
++	})
+ 	if err != nil {
+ 		return "", fmt.Errorf("failed to reach GDStudio: %w", err)
+ 	}
+@@ -662,15 +658,15 @@ func (q *QobuzDownloader) DownloadFromMusicDL(trackID int64, quality string) (st
+ 		return "", fmt.Errorf("failed to encode MusicDL request: %w", err)
+ 	}
+ 
+-	req, err := NewRequestWithDefaultHeaders(http.MethodPost, GetQobuzMusicDLDownloadAPIURL(), bytes.NewReader(payload))
+-	if err != nil {
+-		return "", fmt.Errorf("failed to create MusicDL request: %w", err)
+-	}
+-
+-	req.Header.Set("Content-Type", "application/json")
+-	req.Header.Set("X-Debug-Key", debugKey)
+-
+-	resp, err := q.client.Do(req)
++	resp, err := doCommunityRequest(q.client, "MusicDL", func() (*http.Request, error) {
++		req, err := NewRequestWithDefaultHeaders(http.MethodPost, GetQobuzMusicDLDownloadAPIURL(), bytes.NewReader(payload))
++		if err != nil {
++			return nil, err
++		}
++		req.Header.Set("Content-Type", "application/json")
++		req.Header.Set("X-Debug-Key", debugKey)
++		return req, nil
++	})
+ 	if err != nil {
+ 		return "", fmt.Errorf("failed to reach MusicDL: %w", err)
+ 	}
+-- 
+2.50.0.windows.1
+
