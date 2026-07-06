@@ -8,7 +8,7 @@ My Nix config for various systems
 
 ## macOS initial setup
 
-- Install Determinate Nix Installer, via `curl -fsSL https://install.determinate.systems/nix | sh -s -- install`.
+- Install Determinate Nix Installer, via `curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install`.
 
 ## NixOS and macOS hosts
 
