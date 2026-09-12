@@ -40,7 +40,7 @@ in
       (
         { pkgs, lib, ... }:
         {
-          boot.kernelPackages = pkgs.linuxPackages_latest;
+          boot.kernelPackages = pkgs.linuxPackages_6_12;
           boot.kernelParams = [ "mem_sleep_default=deep" ];
           boot.extraModprobeConfig = ''
             options nvidia NVreg_DynamicPowerManagement=2

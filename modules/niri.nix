@@ -46,7 +46,15 @@
               prefer-no-csd true
 
               output "eDP-1" {
+                mode "2560x1440@60.002"
+                position x=0 y=0
                 scale 1.5
+              }
+
+              output "DP-1" {
+                mode "3440x1440@119.881"
+                position x=1707 y=-480
+                variable-refresh-rate
               }
 
               input {
@@ -100,12 +108,18 @@
                 Mod+Shift+Down { move-window-to-workspace-down; }
 
                 // Column navigation (horizontal)
-                Mod+Left  { focus-column-left; }
-                Mod+Right { focus-column-right; }
+                Mod+Left  { focus-column-or-monitor-left; }
+                Mod+Right { focus-column-or-monitor-right; }
 
                 // Move column horizontally
-                Mod+Shift+Left  { move-column-left; }
-                Mod+Shift+Right { move-column-right; }
+                Mod+Shift+Left  { move-column-left-or-to-monitor-left; }
+                Mod+Shift+Right { move-column-right-or-to-monitor-right; }
+
+                // Move between monitors
+                Mod+Shift+Alt+Left  { move-window-to-monitor-left; }
+                Mod+Shift+Alt+Right { move-window-to-monitor-right; }
+                Mod+Shift+Alt+Up    { move-window-to-monitor-up; }
+                Mod+Shift+Alt+Down  { move-window-to-monitor-down; }
 
                 // Width adjustments
                 Mod+W { switch-preset-column-width; }

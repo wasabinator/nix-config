@@ -45,6 +45,10 @@
 
     # Flatpaks
     services.flatpak = {
+      update.auto = {
+        enable = true;
+        onCalendar = "weekly"; # systemd timer syntax
+      };
       packages = [
         "com.bambulab.BambuStudio"
         "com.github.tchx84.Flatseal"
