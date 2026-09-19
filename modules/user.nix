@@ -22,21 +22,23 @@ let
 in {
   flake.modules.nixos = secrets // {
     user = {
+      imports = [ homeModule ];
       users.users.${owner.username} = {
         isNormalUser = true;
         description = owner.username;
         extraGroups = [ "networkmanager" "wheel" ];
       };
-    } // homeModule;
+    };
   };
 
   flake.modules.darwin = secrets // {
     user = {
+      imports = [ homeModule ];
       system.primaryUser = owner.username;
       users.users.${owner.username} = {
         name = owner.username;
         home = "/Users/${owner.username}";
       };
-    } // homeModule;
+    };
   };
 }

@@ -4,7 +4,8 @@ let
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
   };
 in {
-  flake.modules.nixos.system = { pkgs, ... }: shared // {
+  flake.modules.nixos.system = { pkgs, ... }: {
+    imports = [ shared ];
     nix.gc.automatic = true;
     services.angrr.enable = true;
 
@@ -13,6 +14,7 @@ in {
     ];
   };
 
-  flake.modules.darwin.system = { ... }: shared // {
+  flake.modules.darwin.system = { ... }: {
+    imports = [ shared ];
   };
 }

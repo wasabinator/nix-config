@@ -33,6 +33,7 @@ in
       rb14-user-secrets
       locale
       shell
+      pass
       desktop
       laptop
       development
