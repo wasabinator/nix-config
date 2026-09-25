@@ -1,0 +1,22 @@
+{ config, pkgs, lib, ... }:
+{
+  flake.modules.darwin.ollama = {
+    services.ollama = {
+      enable = true; # binds to localhost by default
+    };
+
+    home = {
+      xdg.configFile."zed/settings.json".text = builtins.toJSON {
+        language_models.ollama.api_url = "http://localhost:11434";
+        agent.default_model = {
+          provider = "ollama";
+          model = "qwen3-coder:30b-a3b";
+        };
+        edit_predictions = {
+          provider = "ollama";
+          model = "qwen2.5-coder:7b";
+        };
+      };
+    };
+  };
+}

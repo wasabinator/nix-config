@@ -36,7 +36,8 @@ in {
       desktop
       laptop
       development
-      paneru
+      #ollama
+      #paneru
       {
         # Let Determinate Nix handle Nix configuration
         nix.enable = false;

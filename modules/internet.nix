@@ -42,7 +42,7 @@
 
   flake.modules.darwin.internet = { ... }: {
     homebrew.casks = [
-      "firefox"
+      #"firefox"
       "signal"
     ];
   };

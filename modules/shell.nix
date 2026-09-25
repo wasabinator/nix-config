@@ -98,6 +98,7 @@ in {
           enable = true;
           interactiveShellInit = ''
             set fish_color_valid_path
+            fish_add_path -g /opt/homebrew/bin /opt/homebrew/sbin
             eval (starship init fish)
             fastfetch
           '';

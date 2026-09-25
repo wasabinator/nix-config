@@ -102,10 +102,18 @@
       config.flake.modules.darwin.multimedia
     ];
 
-    system.defaults.CustomUserPreferences = {
-      "com.apple.desktopservices" = {
-        DSDontWriteNetworkStores = true;
-        DSDontWriteUSBStores = true;
+    system.defaults = {
+      controlcenter.BatteryShowPercentage = true;
+      CustomUserPreferences = {
+        "com.apple.desktopservices" = {
+          DSDontWriteNetworkStores = true;
+          DSDontWriteUSBStores = true;
+        };
+      };
+      dock.wvous-tl-corner = 2;  # mission control
+      trackpad = {
+        Clicking = true;            # tap-to-click
+        TrackpadRightClick = true;  # two-finger right click
       };
     };
 
@@ -113,7 +121,7 @@
       enable = true;
       onActivation = {
         autoUpdate = true;
-        cleanup = "uninstall";
+        cleanup = "none";
         upgrade = true;
       };
       brews = [
@@ -123,6 +131,8 @@
         "bambu-studio"
         "kindle-comic-converter"
         "maczip"
+        "proton-drive"
+        "proton-pass"
         "synology-drive"
       ];
     };
@@ -151,6 +161,7 @@
           DSDontWriteUSBStores = true;
         };
         "com.apple.dock" = {
+          autohide = true;
           largesize = 128;
           magnification = true;
           orientation = "bottom";

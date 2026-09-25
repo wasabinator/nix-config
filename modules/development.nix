@@ -2,7 +2,7 @@
 {
   flake.modules.nixos.development = { pkgs, ... }: {
     imports = with config.flake.modules.nixos; [
-      riscv
+      #riscv
       vscode
     ];
 
@@ -26,13 +26,13 @@
 
   flake.modules.darwin.development = { pkgs, ... }: {
     imports = with config.flake.modules.darwin; [
-      riscv
-      vscode
+      #riscv
+      #vscode
     ];
 
     homebrew = {
       brews = [
-        "opencode"
+        #"opencode"
       ];
       casks = [
         "zed"
